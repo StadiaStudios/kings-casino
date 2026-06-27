@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>King's Casino - Bud Clicker</title>
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#110517">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-title" content="King's Casino">
+    <link rel="apple-touch-icon" href="resources/icon.png">
+    <link rel="icon" type="image/png" href="resources/title-ico.png">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&display=swap');
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Fredoka', sans-serif;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+        html, body {
+            height: 100%;
+            width: 100%;
+            overflow: hidden;
+            background-color: #110517;
+        }
+        .game-viewport {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            background: radial-gradient(circle at 50% 30%, #233d14 0%, #061705 80%);
+            z-index: 1;
+        }
+        .hud-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            width: 100%;
+            z-index: 10;
+        }
+        .back-btn {
+            color: #fff;
+            text-decoration: none;
+            font-weight: bold;
+            background: rgba(0,0,0,0.6);
+            padding: 10px 15px;
+            border-radius: 12px;
+            border: 2px solid #2ecc71;
+            font-size: 1rem;
+            transition: transform 0.1s;
+            box-shadow: 0 4px 0 #1e7e43;
+        }
+        .back-btn:active {
+            transform: translateY(4px);
+            box-shadow: 0 0 0 #1e7e43;
+        }
+        .currency-container {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            align-items: flex-end;
+        }
+        .currency-display {
+            position: relative;
+            display: flex;
+            align-items: center;
+            background: rgba(0,0,0,0.6);
+            border-radius: 30px;
+            padding: 5px 15px 5px 35px;
+            min-width: 140px;
+            justify-content: flex-end;
+        }
+        .chips-border {
+            border: 2px solid #f1c40f;
+            box-shadow: 0 0 10px rgba(241,196,15,0.3);
+        }
+        .buds-border {
+            border: 2px solid #2ecc71;
+            box-shadow: 0 0 10px rgba(46,204,113,0.3);
+        }
+        .cps-border {
+            border: 2px solid #3498db;
+            box-shadow: 0 0 10px rgba(52,152,219,0.3);
+        }
+        .icon-badge {
+            position: absolute;
+            left: -10px;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border: 2px solid #fff;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.5);
+        }
+        .chip-bg { background: radial-gradient(circle,#f1c40f,#f39c12); }
+        .bud-bg { background: radial-gradient(circle,#2ecc71,#27ae60); }
+        .cps-bg { background: radial-gradient(circle,#3498db,#2980b9); }
+
+        .balance-text {
+            color: #fff;
+            font-size: 1.2rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+        }
+        .clicker-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding-bottom: 40px;
+            z-index: 5;
+        }
+        .clicker-wrapper {
+            position: relative;
+            width: 440px;
+            height: 440px;
+            margin-bottom: 50px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .clicker-target {
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+            transition: transform 0.05s ease-out;
+            filter: drop-shadow(0 10px 20px rgba(0,0,0,0.6));
+            z-index: 5;
+        }
+        .clicker-target:active {
+            transform: scale(0.92);
+        }
+        .clicker-target img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            pointer-events: none;
+        }
+        .action-button-group {
+            display: flex;
+            flex-direction: row;
+            gap: 15px;
+            max-width: 90%;
+            justify-content: center;
+        }
+        .btn-shop-trigger {
+            background: linear-gradient(to bottom, #f1c40f, #d35400);
+            border: 3px solid #f9e79f;
+            border-radius: 18px;
+            color: white;
+            padding: 12px 20px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 6px 0 #935116, 0 10px 15px rgba(0,0,0,0.4);
+            text-shadow: 0 2px 4px rgba(0,0,0,0.6);
+            transition: transform 0.1s, box-shadow 0.1s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            white-space: nowrap;
+        }
+        .btn-shop-trigger:active {
+            transform: translateY(6px);
+            box-shadow: 0 0 0 #935116, 0 4px 5px rgba(0,0,0,0.4);
+        }
+        .btn-upgrades-blue {
+            background: linear-gradient(to bottom, #3498db, #1f3a60) !important;
+            border-color: #aed6f1 !important;
+            box-shadow: 0 6px 0 #1b4f72, 0 10px 15px rgba(0,0,0,0.4) !important;
+        }
+        .floating-plus {
+            position: absolute;
+            color: #2ecc71;
+            font-size: 2.2rem;
+            font-weight: 700;
+            text-shadow: 0 4px 8px rgba(0,0,0,0.8), 0 0 10px rgba(46,204,113,0.5);
+            pointer-events: none;
+            z-index: 100;
+            animation: floatUpAndOut 0.8s ease-out forwards;
+        }
+        .floating-plus.rain-boost {
+            color: #f1c40f !important;
+            text-shadow: 0 4px 12px rgba(0,0,0,0.9), 0 0 20px #f39c12 !important;
+            font-size: 2.8rem;
+        }
+        @keyframes floatUpAndOut {
+            0% { transform: translate(-50%, -50%) translateY(0) scale(0.8); opacity: 1; }
+            100% { transform: translate(-50%, -50%) translateY(-120px) scale(1.3); opacity: 0; }
+        }
+        @media (min-width: 768px) {
+            .clicker-wrapper { width: 300px; height: 300px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="game-viewport">
+        <div class="hud-top">
+            <a href="index.html" class="back-btn">⬅ Menu</a>
+            <div class="currency-container">
+                <div class="currency-display chips-border">
+                    <div class="icon-badge chip-bg">
+                        <img style="width:26px;height:26px;" src="resources/items/chip.png" alt="Chip">
+                    </div>
+                    <span class="balance-text" id="clicker-chips">0</span>
+                </div>
+                <div class="currency-display buds-border">
+                    <div class="icon-badge bud-bg">
+                        <img style="width:26px;height:26px;" src="resources/bud-clicker/bud.png" alt="Bud">
+                    </div>
+                    <span class="balance-text" id="clicker-buds">0</span>
+                </div>
+                <div class="currency-display cps-border">
+                    <div class="icon-badge cps-bg">
+                        <span style="font-size: 1.2rem; color: #fff;">⚡</span>
+                    </div>
+                    <span class="balance-text" id="clicker-cps">0/s</span>
+                </div>
+            </div>
+        </div>
+        <div class="clicker-container">
+            <div class="clicker-wrapper" id="clicker-wrapper-anchor">
+                <div class="clicker-target" id="bud-click-target">
+                    <img src="resources/bud-clicker/bud.png" alt="Bud">
+                </div>
+            </div>
+            <div class="action-button-group">
+                <button class="btn-shop-trigger" id="shop-open-btn">🏪 EXCHANGE BUDS</button>
+                <button class="btn-shop-trigger btn-upgrades-blue" id="upgrades-open-btn">🛠️ UPGRADE</button>
+            </div>
+        </div>
+    </div>
+    <div class="fullscreen-shop" id="casino-shop-overlay">
+        <div class="shop-header">
+            <h2 class="shop-title">EXCHANGE BUDS</h2>
+            <button class="shop-close-btn" id="shop-close-btn">✕</button>
+        </div>
+        <div class="shop-content">
+            <div class="shop-card" data-cost="1000" data-base="350" data-bonus="0" data-type="standard">
+                <div class="shop-card-badge">Starter Value</div>
+                <div class="exchange-rate">
+                    <div class="exchange-unit"><img src="resources/bud-clicker/bud.png"><span>1,000 Buds</span></div>
+                    <div class="exchange-arrow">➔</div>
+                    <div class="exchange-unit"><img src="resources/items/chip.png"><span>350 Chips</span></div>
+                </div>
+                <button class="btn-cashout disabled">Cash Out Tier 1</button>
+            </div>
+            <div class="shop-card" data-cost="2000" data-base="650" data-bonus="200" data-type="bonus">
+                <div class="shop-card-badge gold-badge">Runner Deal (+200 Bonus!)</div>
+                <div class="exchange-rate">
+                    <div class="exchange-unit"><img src="resources/bud-clicker/bud.png"><span>2,000 Buds</span></div>
+                    <div class="exchange-arrow">➔</div>
+                    <div class="exchange-unit"><img src="resources/items/chip.png"><span>850 Chips</span></div>
+                </div>
+                <button class="btn-cashout disabled">Cash Out Tier 2</button>
+            </div>
+            <div class="shop-card" data-cost="3000" data-base="1050" data-bonus="600" data-type="bonus">
+                <div class="shop-card-badge purple-badge">Bulk Stash (+600 Bonus!)</div>
+                <div class="exchange-rate">
+                    <div class="exchange-unit"><img src="resources/bud-clicker/bud.png"><span>3,000 Buds</span></div>
+                    <div class="exchange-arrow">➔</div>
+                    <div class="exchange-unit"><img src="resources/items/chip.png"><span>1,650 Chips</span></div>
+                </div>
+                <button class="btn-cashout disabled">Cash Out Tier 3</button>
+            </div>
+            <div class="shop-card" data-cost="5000" data-base="1750" data-type="random">
+                <div class="shop-card-badge rainbow-badge">High Roller (1x - 20x Mystery Bonus!)</div>
+                <div class="exchange-rate">
+                    <div class="exchange-unit"><img src="resources/bud-clicker/bud.png"><span>5,000 Buds</span></div>
+                    <div class="exchange-arrow">➔</div>
+                    <div class="exchange-unit"><img src="resources/items/chip.png"><span>1,750 + 🎲 Extra</span></div>
+                </div>
+                <button class="btn-cashout disabled">Roll High Roller Tier</button>
+            </div>
+        </div>
+    </div>
+    <div id="upgrades-shop-injection-point"></div>
+    <script>
+        const CHIP_STORAGE_KEY = 'kings-casino-chips';
+        const BUD_STORAGE_KEY = 'kings-casino-buds';
+        const MULTIPLIER_STORAGE_KEY = 'kings-casino-click-multiplier';
+        const RAIN_ACTIVE_KEY = 'kings-casino-rain-active';
+
+        function getChips() {
+            let bal = parseInt(localStorage.getItem(CHIP_STORAGE_KEY), 10);
+            if (isNaN(bal)) {
+                bal = 100;
+                localStorage.setItem(CHIP_STORAGE_KEY, bal);
+            }
+            return bal;
+        }
+
+        function getBuds() {
+            let buds = parseFloat(localStorage.getItem(BUD_STORAGE_KEY));
+            if (isNaN(buds)) {
+                buds = 0.0;
+                localStorage.setItem(BUD_STORAGE_KEY, buds);
+            }
+            return buds;
+        }
+
+        function getClickMultiplier() {
+            let mult = parseFloat(localStorage.getItem(MULTIPLIER_STORAGE_KEY));
+            if (isNaN(mult)) {
+                mult = 1.0;
+                localStorage.setItem(MULTIPLIER_STORAGE_KEY, mult);
+            }
+            return mult;
+        }
+
+        function updateUIUpdates() {
+            const currentBuds = getBuds();
+            document.getElementById('clicker-chips').innerText = getChips().toLocaleString();
+            document.getElementById('clicker-buds').innerText = Math.floor(currentBuds).toLocaleString();
+            document.querySelectorAll('.shop-card').forEach(card => {
+                const cost = parseInt(card.getAttribute('data-cost'), 10);
+                const btn = card.querySelector('.btn-cashout');
+                if (btn) {
+                    if (currentBuds >= cost) btn.classList.remove('disabled');
+                    else btn.classList.add('disabled');
+                }
+            });
+        }
+
+        function throttle(fn, delay) {
+            let last = 0;
+            let queued = false;
+            let ctx, args;
+            return function throttled(...a) {
+                const now = Date.now();
+                ctx = this;
+                args = a;
+                if (now - last >= delay) {
+                    last = now;
+                    fn.apply(ctx, args);
+                } else if (!queued) {
+                    queued = true;
+                    setTimeout(() => {
+                        last = Date.now();
+                        queued = false;
+                        fn.apply(ctx, args);
+                    }, delay - (now - last));
+                }
+            };
+        }
+
+        const clickTarget = document.getElementById('bud-click-target');
+        const CLICK_THROTTLE_MS = 24;
+
+        function handleBudClick(e) {
+            const baseMultiplier = getClickMultiplier();
+            const isRainActive = localStorage.getItem(RAIN_ACTIVE_KEY) === 'true';
+            const rainModifier = isRainActive ? 20 : 1;
+            const gainValue = 1 * baseMultiplier * rainModifier;
+
+            let currentBuds = getBuds() + gainValue;
+            localStorage.setItem(BUD_STORAGE_KEY, currentBuds);
+            updateUIUpdates();
+
+            const makePlus = () => {
+                const plusText = document.createElement('div');
+                plusText.className = 'floating-plus' + (isRainActive ? ' rain-boost' : '');
+                plusText.innerText = `+${gainValue.toLocaleString(undefined, {minimumFractionDigits:0, maximumFractionDigits:1})}`;
+
+                let x = e.clientX, y = e.clientY;
+                if ((x === undefined || x <= 0) && e.touches && e.touches.length > 0) {
+                    x = e.touches[0].clientX;
+                    y = e.touches[0].clientY;
+                }
+                plusText.style.left = (x || window.innerWidth / 2) + 'px';
+                plusText.style.top = (y || window.innerHeight / 2) + 'px';
+                document.body.appendChild(plusText);
+                setTimeout(() => plusText.remove(), 800);
+            };
+            if ('requestAnimationFrame' in window) {
+                requestAnimationFrame(makePlus);
+            } else {
+                makePlus();
+            }
+        }
+
+        clickTarget.addEventListener('pointerdown', throttle(handleBudClick, CLICK_THROTTLE_MS));
+
+        const shopOverlay = document.getElementById('casino-shop-overlay');
+        const openShopBtn = document.getElementById('shop-open-btn');
+        const closeShopBtn = document.getElementById('shop-close-btn');
+
+        openShopBtn.addEventListener('click', () => {
+            shopOverlay.classList.add('active');
+        });
+        closeShopBtn.addEventListener('click', () => {
+            shopOverlay.classList.remove('active');
+        });
+
+        window.addEventListener('storage', (e) => {
+            if (e.key === CHIP_STORAGE_KEY || e.key === BUD_STORAGE_KEY || e.key === MULTIPLIER_STORAGE_KEY) {
+                updateUIUpdates();
+            }
+        });
+
+        document.addEventListener('DOMContentLoaded', updateUIUpdates);
+    </script>
+    <script src="scripts/first-click.js"></script>
+    <script src="sfx/bc.js"></script>
+    <script src="scripts/piggy-bank.js"></script>
+    <script src="scripts/bc-shop.js"></script>
+    <script src="scripts/bc-upgrade-shop.js"></script>
+    <script src="vfx/bc-rain-effect.js"></script>
+    <script src="vfx/bc.js"></script>
+</body>
+</html>

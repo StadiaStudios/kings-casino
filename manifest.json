@@ -1,0 +1,22 @@
+{
+  "name": "Kings Casino",
+  "short_name": "Kings Casino",
+  "description": "A rewarding casino browser game Free daily gifts, unlockable trophies, slot machines, and playful casino games!",
+  "start_url": "index.html",
+  "display": "standalone",
+  "background_color": "#2e113c",
+  "theme_color": "#110517",
+  "publisher": "StadiaStudios",
+  "icons": [
+    {
+      "src": "resources/icon.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "resources/icon.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

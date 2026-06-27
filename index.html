@@ -1,0 +1,679 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>King's Casino - Online Play</title>
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#0B0C10">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-title" content="King's Casino">
+    <link rel="apple-touch-icon" href="resources/icon.png">
+    <link rel="icon" href="resources/icon.png" type="image/png">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;800&display=swap');
+        
+        :root {
+            --bg-color: #0B0C10;
+            --gold-primary: #D4AF37;
+            --gold-secondary: #F2D06B;
+            --panel-bg: rgba(255, 255, 255, 0.03);
+            --panel-border: rgba(212, 175, 55, 0.3);
+        }
+
+        *, *::before, *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Montserrat', sans-serif;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        html, body {
+            height: 100%;
+            width: 100%;
+            overflow: hidden;
+            background-color: var(--bg-color);
+        }
+
+        .game-viewport {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            background: radial-gradient(circle at 50% 0%, #1f222e 0%, #0B0C10 80%);
+            z-index: 1;
+        }
+
+        .particles {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            z-index: -1;
+            overflow: hidden;
+            opacity: 0.6;
+        }
+
+        .particle {
+            position: absolute;
+            border-radius: 50%;
+            background: var(--gold-secondary);
+            box-shadow: 0 0 10px var(--gold-primary);
+            animation: floatUp 12s infinite linear;
+        }
+
+        @keyframes floatUp {
+            0% { transform: translateY(100vh) scale(0); opacity: 0; }
+            20% { opacity: 0.8; }
+            80% { opacity: 0.5; }
+            100% { transform: translateY(-10vh) scale(1.5); opacity: 0; }
+        }
+
+        .hud-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px;
+            width: 100%;
+            z-index: 10;
+        }
+
+        .player-profile {
+            display: flex;
+            align-items: center;
+            background: rgba(11, 12, 16, 0.6);
+            backdrop-filter: blur(10px);
+            border-radius: 30px;
+            padding: 6px 20px 6px 6px;
+            border: 1px solid var(--panel-border);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+        }
+
+        .avatar {
+            width: 42px;
+            height: 42px;
+            background: linear-gradient(135deg, #2c3e50, #000000);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border: 2px solid var(--gold-primary);
+            margin-right: 12px;
+            overflow: hidden;
+        }
+
+        .player-name {
+            color: #fff;
+            font-size: 1rem;
+            font-weight: 600;
+            letter-spacing: 1px;
+        }
+
+        .currency-display {
+            position: relative;
+            display: flex;
+            align-items: center;
+            background: rgba(11, 12, 16, 0.6);
+            backdrop-filter: blur(10px);
+            border-radius: 30px;
+            padding: 6px 20px 6px 40px;
+            border: 1px solid var(--panel-border);
+            box-shadow: 0 4px 15px rgba(212, 175, 55, 0.15);
+        }
+
+        .coin-icon {
+            position: absolute;
+            left: -15px;
+            width: 50px;
+            height: 50px;
+            background: radial-gradient(circle, #ffe158, #d4af37);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border: 2px solid #fff;
+            box-shadow: 0 0 15px rgba(212, 175, 55, 0.6);
+            overflow: hidden;
+        }
+
+        .balance-text {
+            color: var(--gold-secondary);
+            font-size: 1.3rem;
+            font-weight: 800;
+            letter-spacing: 1.5px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.8);
+        }
+
+        .main-menu {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            align-items: center;
+            padding-top: 20px;
+            padding-bottom: 90px;
+        }
+
+        .game-logo {
+            font-size: 3rem;
+            text-align: center;
+            text-transform: uppercase;
+            font-weight: 800;
+            color: #fff;
+            letter-spacing: 4px;
+            margin-bottom: 40px;
+            line-height: 1.2;
+            text-shadow: 0 0 20px rgba(212, 175, 55, 0.4);
+        }
+
+        .game-logo span {
+            display: block;
+            font-size: 2.5rem;
+            background: linear-gradient(to right, #BF953F, #FCF6BA, #B38728, #FBF5B7, #AA771C);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: none;
+            letter-spacing: 8px;
+        }
+
+        .mode-selector-wrapper {
+            width: 100%;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            overflow-y: auto;
+            padding: 0 20px;
+            max-height: 55vh;
+            min-height: 0;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .mode-selector {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            width: 100%;
+            max-width: 450px;
+            padding-bottom: 20px;
+        }
+
+        .btn-3d {
+            position: relative;
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            justify-content: space-between;
+            padding: 20px 25px;
+            border-radius: 16px;
+            cursor: pointer;
+            text-decoration: none;
+            background: linear-gradient(145deg, rgba(255,255,255,0.05) 0%, rgba(0,0,0,0.5) 100%);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-left: 5px solid var(--accent-color);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            transition: all 0.2s cubic-bezier(0.25, 0.8, 0.25, 1);
+            overflow: hidden;
+        }
+
+        .btn-3d::after {
+            content: '';
+            position: absolute;
+            top: 0; right: 0; bottom: 0; left: 0;
+            background: radial-gradient(circle at right, var(--accent-color) 0%, transparent 60%);
+            opacity: 0.1;
+            z-index: 0;
+        }
+
+        .btn-3d:active {
+            transform: scale(0.97);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.6);
+        }
+
+        .btn-3d .btn-content {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            z-index: 1;
+        }
+
+        .btn-3d h2 {
+            font-size: 1.5rem;
+            color: #fff;
+            letter-spacing: 1px;
+            margin-bottom: 4px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.8);
+        }
+
+        .btn-3d p {
+            color: var(--accent-color);
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .btn-icon {
+            z-index: 1;
+            filter: drop-shadow(0 0 15px var(--accent-color));
+            transition: transform 0.3s ease;
+        }
+
+        .btn-3d:hover .btn-icon {
+            transform: scale(1.1) rotate(5deg);
+        }
+
+        .btn-slots { --accent-color: #FF2A55; }
+        .btn-wheel { --accent-color: #00E676; }
+        .btn-pusher { --accent-color: #00D4FF; }
+        .btn-derby { --accent-color: #9D00FF; border-color: rgba(255,255,255,0.08); }
+        .btn-vip { --accent-color: #FFD700; border: 1px solid var(--gold-primary); background: linear-gradient(145deg, rgba(212,175,55,0.1) 0%, rgba(0,0,0,0.7) 100%); }
+        .btn-cardcrates { --accent-color: #3572ef; border: 1px solid #3572ef; background: linear-gradient(145deg, rgba(53,114,239,0.12) 0%, rgba(0,0,0,0.67) 100%); }
+
+        .btn-vip.locked {
+            --accent-color: #777;
+            border-color: #444;
+            filter: grayscale(1);
+        }
+        .btn-cardcrates.locked {
+            --accent-color: #777;
+            border-color: #444;
+            filter: grayscale(1);
+        }
+
+        .hud-bottom {
+            position: absolute;
+            bottom: 20px;
+            left: 0;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            gap: 25px;
+            z-index: 10;
+        }
+
+        .nav-btn {
+            width: 60px;
+            height: 60px;
+            background: rgba(11, 12, 16, 0.7);
+            backdrop-filter: blur(8px);
+            border-radius: 18px;
+            border: 1px solid var(--gold-primary);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 0 15px rgba(212, 175, 55, 0.15), inset 0 0 10px rgba(212, 175, 55, 0.05);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .nav-btn img {
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5));
+            transition: transform 0.2s ease;
+        }
+
+        .nav-btn:active {
+            transform: scale(0.9);
+            box-shadow: 0 0 5px rgba(212, 175, 55, 0.3), inset 0 0 15px rgba(212, 175, 55, 0.2);
+        }
+        
+        .nav-btn:active img {
+            transform: scale(0.85);
+        }
+
+        .buy-btn {
+            background: linear-gradient(90deg, var(--gold-secondary) 0%, var(--gold-primary) 100%);
+            color: #000;
+            font-size: 0.9rem;
+            border: none;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(212, 175, 55, 0.4);
+            padding: 8px 20px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            outline: none;
+        }
+
+        .buy-btn:active {
+            box-shadow: 0 2px 5px rgba(212, 175, 55, 0.4);
+            transform: translateY(2px);
+        }
+
+        @media (min-width: 768px) {
+            .mode-selector-wrapper { overflow-y: visible; height: auto; justify-content: center; max-height: none; }
+            .mode-selector { flex-direction: row; flex-wrap: wrap; max-width: 1000px; justify-content: center; }
+            .btn-3d { flex: 1 1 300px; flex-direction: column-reverse; text-align: center; padding: 35px 20px; border-left: 1px solid rgba(255,255,255,0.08); border-bottom: 5px solid var(--accent-color); }
+            .btn-3d::after { background: radial-gradient(circle at bottom, var(--accent-color) 0%, transparent 60%); }
+            .btn-3d .btn-content { align-items: center; margin-top: 20px; }
+            .game-logo { font-size: 4rem; }
+            .game-logo span { font-size: 3.5rem; }
+        }
+
+        .mode-selector-wrapper::-webkit-scrollbar { width: 4px; }
+        .mode-selector-wrapper::-webkit-scrollbar-thumb { background: var(--gold-primary); border-radius: 4px; }
+    </style>
+</head>
+<body>
+    <audio id="bgm-audio" src="sfx/bgm.mp3" loop preload="auto"></audio>
+    <div class="game-viewport">
+        <div class="particles" id="particles"></div>
+        
+        <div class="hud-top">
+            <div class="player-profile">
+                <div class="avatar">
+                    <img src="resources/ui/guest.png" alt="Crown" style="width:28px;height:28px;">
+                </div>
+                <div class="player-name">GUEST</div>
+            </div>
+            <div class="currency-display">
+                <div class="coin-icon">
+                    <img src="resources/items/chip.png" alt="Chip" style="width:40px;height:40px;">
+                </div>
+                <span class="balance-text" id="lobby-balance">100</span>
+            </div>
+        </div>
+
+        <div class="main-menu">
+            <h1 class="game-logo">KING'S<br><span>CASINO</span></h1>
+            <div class="mode-selector-wrapper">
+                <div class="mode-selector">
+                    
+                    <div class="btn-3d btn-slots" onclick="playGame('slot-machines.html')">
+                        <div class="btn-content">
+                            <h2>Slot Machine</h2>
+                            <p>Hit the Jackpot</p>
+                        </div>
+                        <div class="btn-icon">
+                            <img src="resources/ui/slots.png" alt="Slots" style="width:84px;height:84px;">
+                        </div>
+                    </div>
+
+                    <div class="btn-3d btn-wheel" onclick="playGame('casino-wheel.html')">
+                        <div class="btn-content">
+                            <h2>Casino Wheel</h2>
+                            <p>Spin to Win</p>
+                        </div>
+                        <div class="btn-icon">
+                            <img src="resources/ui/wheel.png" alt="Wheel" style="width:120px;height:84px;">
+                        </div>
+                    </div>
+
+                    <div class="btn-3d btn-pusher" onclick="playGame('bud-game.html')">
+                        <div class="btn-content">
+                            <h2>Bud Clicker</h2>
+                            <p>Click to Win</p>
+                        </div>
+                        <div class="btn-icon">
+                            <img src="resources/bud-clicker/bud.png" alt="Bud Clicker" style="width:126px;height:84px;">
+                        </div>
+                    </div>
+
+                    <div class="btn-3d btn-derby" onclick="playGame('horse-racing.html')">
+                        <div class="btn-content">
+                            <h2>Derby Dash</h2>
+                            <p>Track Racing</p>
+                        </div>
+                        <div class="btn-icon">
+                            <img src="resources/horse-racing/horse-2.png" alt="Horse" style="width:120px;height:84px;">
+                        </div>
+                    </div>
+
+                    <div class="btn-3d btn-cardcrates" id="card-crates-btn">
+                        <div class="btn-content" id="card-crates-btn-content">
+                            <h2>Card Crates</h2>
+                            <p>Collect &amp; Win</p>
+                            <button id="card-crates-buy-btn" class="buy-btn" style="margin-top:15px;display:none;">Buy $500K</button>
+                        </div>
+                        <div class="btn-icon">
+                            <img src="dlc/card-bank/resources/items/crate1.png" alt="Card Crates" style="width:84px;height:84px;">
+                        </div>
+                    </div>
+
+                    <div class="btn-3d btn-vip" id="vip-room-btn">
+                        <div class="btn-content" id="vip-btn-content">
+                            <h2>VIP Room</h2>
+                            <p>Exclusive Games</p>
+                            <button id="vip-buy-btn" class="buy-btn" style="margin-top:15px;display:none;">Buy $200K</button>
+                        </div>
+                        <div class="btn-icon">
+                            <img src="resources/title-ico.png" alt="VIP Room" style="width:84px;height:84px;">
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <div class="hud-bottom">
+            <div class="nav-btn">
+                <img src="resources/ui/trophy.png" alt="Trophy" style="width:32px;height:32px;">
+            </div>
+            <div class="nav-btn">
+                <img src="resources/ui/gift.png" alt="Gift" style="width:35px;height:35px;">
+            </div>
+            <div class="nav-btn">
+                <img src="resources/ui/settings.png" alt="Settings" style="width:35px;height:35px;">
+            </div>
+            <div class="nav-btn" onclick="window.location.href='shop.html'">
+                <img src="resources/ui/shopping-cart.png" alt="Shop" style="width:35px;height:35px;">
+            </div>
+        </div>
+        
+        <audio id="hud-btn-sfx" src="sfx/menu-ui.mp3" preload="auto"></audio>
+    </div>
+
+    <script>
+        const particleContainer = document.getElementById('particles');
+        for (let i = 0; i < 20; i++) {
+            const p = document.createElement('div');
+            p.className = 'particle';
+            p.style.left = Math.random() * 100 + 'vw';
+            const sz = Math.random() * 6 + 3;
+            p.style.width = sz + 'px';
+            p.style.height = sz + 'px';
+            const dur = Math.random() * 10 + 10;
+            p.style.animationDuration = dur + 's';
+            p.style.animationDelay = (-Math.random() * dur) + 's';
+            particleContainer.appendChild(p);
+        }
+
+        const bgmAudio = document.getElementById('bgm-audio');
+        let hasTriedPlay = false;
+        function tryPlayBGM() {
+            if (!hasTriedPlay) {
+                hasTriedPlay = true;
+                bgmAudio.volume = 0.6;
+                const playPromise = bgmAudio.play();
+                if (playPromise !== undefined) {
+                    playPromise.catch(() => {
+                        const resume = function () {
+                            bgmAudio.play();
+                            window.removeEventListener('pointerdown', resume);
+                            window.removeEventListener('keydown', resume);
+                        };
+                        window.addEventListener('pointerdown', resume);
+                        window.addEventListener('keydown', resume);
+                    });
+                }
+            }
+        }
+        window.addEventListener('DOMContentLoaded', tryPlayBGM);
+
+        const hudBtnSFX = document.getElementById('hud-btn-sfx');
+        document.querySelectorAll('.hud-bottom .nav-btn').forEach(btn => {
+            btn.addEventListener('click', function () {
+                hudBtnSFX.pause();
+                hudBtnSFX.currentTime = 0;
+                hudBtnSFX.play();
+            });
+        });
+
+        const STORAGE_KEY = 'kings-casino-chips';
+        const VIP_UNLOCKED_KEY = 'kings-casino-vip-owned';
+        const VIP_COST = 200000;
+        const CARDCRATES_UNLOCKED_KEY = 'kings-casino-cardcrates-owned';
+        const CARDCRATES_COST = 500000;
+        
+        function getBalance() {
+            let bal = parseInt(localStorage.getItem(STORAGE_KEY), 10);
+            if (isNaN(bal)) {
+                bal = 100;
+                localStorage.setItem(STORAGE_KEY, bal);
+            }
+            return bal;
+        }
+        
+        function setBalance(amount) {
+            localStorage.setItem(STORAGE_KEY, amount);
+        }
+        
+        function updateLobbyBalanceDisplay() {
+            const balance = getBalance();
+            document.getElementById('lobby-balance').innerText = balance.toLocaleString();
+        }
+        
+        updateLobbyBalanceDisplay();
+        window.addEventListener('storage', function (e) {
+            if (e.key === STORAGE_KEY) updateLobbyBalanceDisplay();
+        });
+
+        function playGame(gameFile) {
+            setTimeout(() => {
+                window.location.href = gameFile;
+            }, 150);
+        }
+
+        function isVipOwned() {
+            return localStorage.getItem(VIP_UNLOCKED_KEY) === "1";
+        }
+        
+        function setVipOwned() {
+            localStorage.setItem(VIP_UNLOCKED_KEY, "1");
+        }
+
+        function isCardCratesOwned() {
+            return localStorage.getItem(CARDCRATES_UNLOCKED_KEY) === "1";
+        }
+        function setCardCratesOwned() {
+            localStorage.setItem(CARDCRATES_UNLOCKED_KEY, "1");
+        }
+
+        function setupCardCratesBtn() {
+            const btn = document.getElementById('card-crates-btn');
+            const buyBtn = document.getElementById('card-crates-buy-btn');
+
+            function updateBtnState() {
+                if (isCardCratesOwned()) {
+                    buyBtn.style.display = 'none';
+                    btn.onclick = function() { playGame('dlc/card-bank/crate-shop.html'); };
+                    btn.classList.remove('locked');
+                } else {
+                    buyBtn.style.display = '';
+                    btn.onclick = null;
+                    btn.classList.add('locked');
+                }
+            }
+
+            buyBtn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                const balance = getBalance();
+                if (balance < CARDCRATES_COST) {
+                    buyBtn.innerText = "Not Enough!";
+                    buyBtn.disabled = true;
+                    buyBtn.style.background = "#bbb";
+                    setTimeout(() => {
+                        buyBtn.innerText = "Buy $500K";
+                        buyBtn.disabled = false;
+                        buyBtn.style.background = "";
+                    }, 1200);
+                    return;
+                }
+                setBalance(balance - CARDCRATES_COST);
+                setCardCratesOwned();
+                updateLobbyBalanceDisplay();
+                updateBtnState();
+                buyBtn.innerText = "Purchased!";
+                setTimeout(() => {
+                    buyBtn.style.display = 'none';
+                }, 1000);
+            });
+
+            updateBtnState();
+        }
+
+        function setupVipRoomBtn() {
+            const vipBtn = document.getElementById('vip-room-btn');
+            const vipBuyBtn = document.getElementById('vip-buy-btn');
+
+            function updateVipBtnState() {
+                if (isVipOwned()) {
+                    vipBuyBtn.style.display = 'none';
+                    vipBtn.onclick = function() { playGame('dlc/vip-room/index.html'); };
+                    vipBtn.classList.remove('locked');
+                } else {
+                    vipBuyBtn.style.display = '';
+                    vipBtn.onclick = null;
+                    vipBtn.classList.add('locked');
+                }
+            }
+
+            vipBuyBtn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                const balance = getBalance();
+                if (balance < VIP_COST) {
+                    vipBuyBtn.innerText = "Not Enough!";
+                    vipBuyBtn.disabled = true;
+                    vipBuyBtn.style.background = "#bbb";
+                    setTimeout(() => {
+                        vipBuyBtn.innerText = "Buy $200K";
+                        vipBuyBtn.disabled = false;
+                        vipBuyBtn.style.background = "";
+                    }, 1200);
+                    return;
+                }
+                setBalance(balance - VIP_COST);
+                setVipOwned();
+                updateLobbyBalanceDisplay();
+                updateVipBtnState();
+                vipBuyBtn.innerText = "Purchased!";
+                setTimeout(() => {
+                    vipBuyBtn.style.display = 'none';
+                }, 1000);
+            });
+
+            updateVipBtnState();
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            setupVipRoomBtn();
+            setupCardCratesBtn();
+        });
+
+        document.addEventListener('touchmove', function(e) {
+            if (
+                e.target.closest('.mode-selector-wrapper') || 
+                e.target.closest('.trophy-list') || 
+                e.target.closest('.kc-guide-modal')
+            ) {
+                return;
+            }
+            e.preventDefault();
+        }, { passive: false });
+    </script>
+
+    <script src="scenes/introduction.js"></script>
+    <script src="scenes/tutorial.js"></script>
+    <script src="scripts/loading-screen.js"></script>
+    <script src="scripts/age-gate.js"></script>
+    <script src="scripts/piggy-bank.js"></script>
+    <script src="scripts/trophies.js"></script>
+    <script src="scripts/settings.js"></script>
+    <script src="scripts/daily-gifts.js"></script>
+</body>
+</html>
