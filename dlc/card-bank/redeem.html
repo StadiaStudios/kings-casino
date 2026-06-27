@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
+  <title>King's Casino - Redeem Card</title>
+  <link rel="manifest" href="../../manifest.json">
+  <meta name="theme-color" content="#0B0C10">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="King's Casino DLC">
+  <link rel="apple-touch-icon" href="../../resources/icon.png">
+  <link rel="icon" href="../../resources/icon.png" type="image/png">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&display=swap');
+    html, body {
+      height: 100%;
+      width: 100vw;
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      min-height: 100vh;
+      min-width: 100vw;
+      font-family: 'Fredoka', sans-serif;
+      background: linear-gradient(135deg, #110517 0%, #32174d 100%);
+      display: flex;
+      flex-direction: column;
+      box-sizing: border-box;
+      overflow-x: hidden;
+    }
+    .fullscreen-redeem-flex {
+      flex: 1 1 auto;
+      width: 100vw;
+      height: 100vh;
+      display: flex;
+      align-items: stretch;
+      justify-content: center;
+      padding: 0;
+      margin: 0;
+      overflow-y: auto;
+      background: transparent;
+    }
+    .redeem-container {
+      background: rgba(0,0,0,0.58);
+      border-radius: 24px;
+      border: 2.5px solid #f1c40f;
+      box-shadow: 0 8px 36px 0px rgba(20,15,45,0.38);
+      padding: 48px 4vw 40px 4vw;
+      margin: 4vh 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 36px;
+      max-width: 540px;
+      width: 92vw;
+      box-sizing: border-box;
+      transition: max-width 0.2s;
+    }
+    .redeem-title {
+      font-size: 2.9rem;
+      font-weight: 700;
+      margin-bottom: 8px;
+      color: #F39C12;
+      background: linear-gradient(to bottom, #f1c40f 40%, #e67e22 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      text-align: center;
+      letter-spacing: 2.5px;
+      line-height: 1.17;
+      word-break: break-word;
+      width: 100%;
+    }
+    .redeem-instructions {
+      color: #fff;
+      font-size: 1.20rem;
+      margin-bottom: 12px;
+      text-align: center;
+      opacity: 0.93;
+      line-height: 1.6;
+      width: 100%;
+      word-break: break-word;
+    }
+    .free-code-row {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      flex-wrap: wrap;
+      gap: 10px;
+      font-size: 1.15rem;
+      font-weight: 600;
+      color: #fffab2;
+      background: rgba(251, 205, 80, 0.10);
+      border-radius: 10px;
+      padding: 13px 18px;
+      user-select: text;
+      word-break: break-all;
+      border: 2px solid #f1c40f;
+      box-sizing: border-box;
+      margin-bottom: 4px;
+      transition: border 0.14s;
+      box-shadow: 0 4px 10px rgba(34,19,60,0.06);
+    }
+    .free-code-label {
+      color: #f1c40f;
+      font-weight: bold;
+      margin-right: 6px;
+    }
+    #free-code-value {
+      font-family: monospace;
+      letter-spacing: 1.1px;
+      font-weight: 700;
+      background: #251441;
+      border-radius: 5px;
+      padding: 2.5px 8px;
+      margin-right: 5px;
+      color: #ffe56d;
+      font-size: 1.14em;
+    }
+    .free-code-copy-btn {
+      background: #e67e22;
+      border: none;
+      color: #fff;
+      font-size: 1em;
+      font-weight: 600;
+      border-radius: 8px;
+      cursor: pointer;
+      padding: 5px 15px;
+      margin-left: 6px;
+      margin-right: 2px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.18);
+      transition: background .15s, box-shadow .17s;
+    }
+    .free-code-copy-btn:active {
+      background: #c97e16;
+      box-shadow: 0 0px 2px rgba(25,0,25,0.18);
+    }
+    .free-code-timer {
+      font-size: 1.02em;
+      margin-left: 10px;
+      color: #ffe661;
+      letter-spacing: 1px;
+      flex-shrink: 1;
+      min-width: 120px;
+    }
+    .redeem-form-group {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+    .redeem-input {
+      font-size: 1.34rem;
+      padding: 16px 18px;
+      border-radius: 11px;
+      border: 2px solid #e67e22;
+      width: 100%;
+      margin-bottom: 5px;
+      outline: none;
+      box-sizing: border-box;
+      transition: border 0.16s;
+      background: #1e1637;
+      color: #fffbe7;
+      font-family: 'Fredoka', sans-serif;
+    }
+    .redeem-input:focus {
+      border-color: #f1c40f;
+      background: #271a42;
+    }
+    .redeem-btn {
+      background: linear-gradient(to bottom, #f1c40f, #e67e22 90%);
+      color: #2e113c;
+      font-weight: 700;
+      font-size: 1.2rem;
+      border: none;
+      border-radius: 23px;
+      padding: 14px 0;
+      cursor: pointer;
+      box-shadow: 0 2px 15px rgba(0,0,0,0.16);
+      margin-top: 4px;
+      transition: background 0.13s, box-shadow 0.18s;
+      width: 100%;
+    }
+    .redeem-btn:active {
+      background: #ffd86b;
+      box-shadow: 0 0px 2px rgba(45,0,25,0.13);
+    }
+    .redeem-result {
+      min-height: 38px;
+      padding-top: 10px;
+      font-size: 1.09rem;
+      font-weight: 600;
+      color: #fff;
+      text-align: center;
+      width: 100%;
+      word-break: break-word;
+    }
+    .redeem-success {
+      color: #42f554;
+      background: rgba(66,245,84,0.08);
+      border-radius: 8px;
+      padding: 7px 0;
+      font-size: 1.11em;
+    }
+    .redeem-error {
+      color: #fd4040;
+      background: rgba(253,64,64,0.11);
+      border-radius: 7px;
+      padding: 7px 0;
+      font-size: 1.11em;
+    }
+    .card-earned {
+      margin-top: 10px;
+      color: #ffd21b;
+      font-weight: 800;
+      letter-spacing: 1.2px;
+      font-size: 1.25rem;
+      text-shadow: 0 1px 12px #160c19;
+    }
+    .back-link {
+      margin-top: 18px;
+      color: #e67e22;
+      text-decoration: none;
+      font-size: 1.08rem;
+      font-weight: 600;
+      letter-spacing: 1.1px;
+      transition: text-decoration .16s, color 0.10s;
+      align-self: flex-start;
+      margin-left: 0;
+    }
+    .back-link:hover, .back-link:focus {
+      text-decoration: underline;
+      color: #ffd86b;
+    }
+    ::-webkit-scrollbar {
+      width: 11px;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: linear-gradient(to bottom, #f1c40f, #e67e22 80%);
+      border-radius: 10px;
+      border: 2px solid #110517;
+    }
+    ::-webkit-scrollbar-track {
+      background: #191524;
+      border-radius: 9px;
+    }
+    html {
+      scrollbar-width: thin;
+      scrollbar-color: #f1c40f #191524;
+    }
+    @media (max-width: 900px) {
+      .redeem-container {
+        max-width: 93vw;
+        padding: 32px 2vw 26px 2vw;
+        gap: 25px;
+      }
+      .redeem-title { font-size: 2.15rem; }
+      .redeem-instructions { font-size: 1.06rem; }
+      .free-code-row { font-size: 1.02rem; }
+    }
+    @media (max-width: 700px) {
+      .redeem-container {
+        max-width: 99vw;
+        padding: 21px 3vw 12px 3vw;
+        border-radius: 14px;
+      }
+      .redeem-title { font-size: 1.7rem; letter-spacing: 1.1px; }
+      .redeem-instructions { font-size: 0.98rem; }
+      .free-code-row { font-size: 0.98rem; padding: 8px 6px; }
+      .card-earned { font-size: 1.09rem; }
+      .redeem-input { font-size: 1.07rem; padding: 12px 8px; }
+      .redeem-btn { font-size: 1.03rem; padding: 10px 0;}
+      .free-code-timer { min-width: 96px; }
+      .back-link { font-size: 1rem; }
+    }
+    @media (max-width: 480px) {
+      .fullscreen-redeem-flex {
+        padding: 0px;
+        flex-direction: column;
+      }
+      .redeem-container {
+        max-width: 100vw;
+        width: 100vw;
+        padding: 7vw 2vw 10vw 2vw;
+        border-radius: 0 0 13px 13px;
+        box-shadow: 0 4px 19px rgba(23,12,40,0.13);
+        margin: 0;
+        gap: 15vw;
+      }
+      .redeem-title { font-size: 1.34rem; letter-spacing: 0.5px; }
+      .redeem-instructions { font-size: 0.96rem; }
+      .free-code-row { font-size: 0.93rem; padding: 7px 1vw; }
+      .card-earned { font-size: 0.98rem; }
+      .redeem-result { font-size: 0.97rem; }
+      .redeem-input { font-size: 0.99rem; padding: 10px 2vw;}
+      .redeem-btn { font-size: 0.93rem; padding: 10px 0;}
+      .back-link { font-size: 0.98rem; }
+    }
+    @media (max-width:380px) {
+      .redeem-title { font-size: 1.07rem;}
+      .redeem-instructions { font-size: 0.89rem;}
+      .card-earned { font-size: 0.88rem;}
+    }
+  </style>
+</head>
+<body>
+  <div class="fullscreen-redeem-flex">
+    <div class="redeem-container">
+      <div class="redeem-title">Redeem Card Code</div>
+      <div class="redeem-instructions">
+        Enter your secret 13-digit card code below. Each code is redeemable only ONCE per player and grants a free card!
+      </div>
+      <div class="free-code-row" id="free-code-row">
+        <span class="free-code-label">Free Code:</span>
+        <span id="free-code-value"></span>
+        <button class="free-code-copy-btn" id="free-code-copy-btn" title="Copy code">Copy</button>
+        <span class="free-code-timer" id="free-code-timer"></span>
+      </div>
+      <div class="redeem-form-group">
+        <input 
+          id="redeem-code-input"
+          class="redeem-input"
+          type="text"
+          maxlength="13"
+          placeholder="Enter 13-digit code..."
+          autocomplete="off"
+          spellcheck="false"
+          autofocus
+        />
+        <button id="redeem-submit-btn" class="redeem-btn">Redeem</button>
+      </div>
+      <div id="redeem-result" class="redeem-result"></div>
+      <a href="crate-shop.html" class="back-link">← Back to Crate Shop</a>
+    </div>
+  </div>
+  <script src="scripts/inventory.js"></script>
+  <script>
+    const CODE_LIST = [
+      {code: "5551144918201", reward: "c1"},
+      {code: "1562883902716", reward: "c1"},
+      {code: "3901726797311", reward: "c1"},
+      {code: "4432211988776", reward: "c1"},
+      {code: "5124678123448", reward: "c1"},
+      {code: "2049581123476", reward: "c1"},
+      {code: "7260149938277", reward: "c1"},
+      {code: "6503498100234", reward: "c1"},
+      {code: "3317798124893", reward: "c1"},
+      {code: "9081723498264", reward: "c1"},
+
+      {code: "4262991003747", reward: "c2"},
+      {code: "7890654321987", reward: "c2"},
+      {code: "3024756381920", reward: "c2"},
+      {code: "5321876490288", reward: "c2"},
+      {code: "1054879321064", reward: "c2"},
+      {code: "4963217865400", reward: "c2"},
+      {code: "1029384756102", reward: "c2"},
+      {code: "5726318492093", reward: "c2"},
+      {code: "8745632190853", reward: "c2"},
+      {code: "1983014765239", reward: "c2"},
+
+      {code: "9128401112763", reward: "c3"},
+      {code: "1138240965821", reward: "c3"},
+      {code: "6758491023487", reward: "c3"},
+      {code: "4910823765491", reward: "c3"},
+      {code: "3801728391746", reward: "c3"},
+      {code: "8594391247351", reward: "c3"},
+      {code: "2748510392577", reward: "c3"},
+      {code: "4739201839204", reward: "c3"},
+      {code: "2398475621049", reward: "c3"},
+      {code: "5839201754830", reward: "c3"},
+
+      {code: "7748391203827", reward: "c4"},
+      {code: "2491750234982", reward: "c4"},
+      {code: "1938574029384", reward: "c4"},
+      {code: "8132495710293", reward: "c4"},
+      {code: "4291835748302", reward: "c4"},
+      {code: "9648571230457", reward: "c4"},
+      {code: "1574920389102", reward: "c4"},
+      {code: "2039485761028", reward: "c4"},
+      {code: "6723109482057", reward: "c4"},
+      {code: "8907123409571", reward: "c4"},
+
+      {code: "1234512345123", reward: "c1"},
+      {code: "2345623456234", reward: "c2"},
+      {code: "3456734567345", reward: "c3"},
+      {code: "4567845678456", reward: "c4"},
+      {code: "1234598765432", reward: "c1"},
+      {code: "6543265432654", reward: "c2"},
+      {code: "7890178901789", reward: "c3"},
+      {code: "8765401234567", reward: "c4"},
+      {code: "1111111111111", reward: "c1"},
+      {code: "2222222222222", reward: "c2"},
+      {code: "3333333333333", reward: "c3"},
+      {code: "4444444444444", reward: "c4"}
+    ];
+
+    const USED_CODES_KEY = "kc_redeemed_codes_v2";
+    const USED_CODES_TIMESTAMP_KEY = "kc_usedcodes_ts_v2";
+    const USED_CODES_TTL_MS = 10 * 24 * 60 * 60 * 1000;
+    const FREE_CODE_STORAGE_KEY = "kc_free_code_v2";
+    const FREE_CODE_TS_KEY = "kc_free_code_time_v2";
+    const FREE_CODE_INTERVAL_MS = 48 * 60 * 60 * 1000;
+
+    function getUsedCodesObj() {
+      let list, ts;
+      try {
+        list = JSON.parse(localStorage.getItem(USED_CODES_KEY) || "[]");
+      } catch (err) {
+        localStorage.removeItem(USED_CODES_KEY);
+        list = [];
+      }
+      try {
+        ts = Number(localStorage.getItem(USED_CODES_TIMESTAMP_KEY) || '0');
+      } catch(e) { ts = 0; }
+      return {list, ts};
+    }
+
+    function saveUsedCodes(list) {
+      localStorage.setItem(USED_CODES_KEY, JSON.stringify(list));
+      localStorage.setItem(USED_CODES_TIMESTAMP_KEY, String(Date.now()));
+    }
+
+    function resetUsedCodesIfNeeded() {
+      const {list, ts} = getUsedCodesObj();
+      const now = Date.now();
+      if (ts && now - ts > USED_CODES_TTL_MS) {
+        localStorage.removeItem(USED_CODES_KEY);
+        localStorage.setItem(USED_CODES_TIMESTAMP_KEY, String(now));
+        return [];
+      }
+      return list;
+    }
+
+    function getUsedCodes() {
+      return resetUsedCodesIfNeeded();
+    }
+
+    function addUsedCode(code) {
+      const list = getUsedCodes();
+      if (!list.includes(code)) {
+        list.push(code);
+        saveUsedCodes(list);
+      }
+    }
+
+    function isCodeUsed(code) {
+      return getUsedCodes().includes(code);
+    }
+
+    function getCardDataById(cardId) {
+      if (typeof CARD_POOL !== "undefined") {
+        return CARD_POOL.find(c => c.id === cardId) || null;
+      }
+      return null;
+    }
+
+    function validateRedeemCode(input) {
+      const trimmed = String(input).replace(/\s+/g, '');
+      if (trimmed.length !== 13 || !/^\d{13}$/.test(trimmed)) return null;
+      return CODE_LIST.find(obj => obj.code === trimmed) || null;
+    }
+
+    function giveRewardCard(cardId) {
+      const cardInfo = getCardDataById(cardId);
+      if (!cardInfo) {
+        return false;
+      }
+      if (typeof InventorySystem !== "undefined" && typeof InventorySystem.addCard === "function") {
+        InventorySystem.addCard(cardInfo.id);
+        return true;
+      }
+      return false;
+    }
+
+    function generateFreeCode(dateNum) {
+      let pool = CODE_LIST;
+      let index = Math.floor(dateNum % pool.length);
+      return pool[index].code;
+    }
+
+    function getCurrentFreeCodeObj() {
+      let ts = parseInt(localStorage.getItem(FREE_CODE_TS_KEY) || "0", 10);
+      let code = localStorage.getItem(FREE_CODE_STORAGE_KEY) || "";
+      let now = Date.now();
+      if (!ts || now - ts > FREE_CODE_INTERVAL_MS) {
+        code = generateFreeCode(Math.floor(now / FREE_CODE_INTERVAL_MS));
+        ts = Math.floor(now / FREE_CODE_INTERVAL_MS) * FREE_CODE_INTERVAL_MS;
+        localStorage.setItem(FREE_CODE_STORAGE_KEY, code);
+        localStorage.setItem(FREE_CODE_TS_KEY, String(ts));
+      }
+      return {code, ts};
+    }
+
+    const codeInput = document.getElementById("redeem-code-input");
+    const submitBtn = document.getElementById("redeem-submit-btn");
+    const resultDiv = document.getElementById("redeem-result");
+    const freeCodeValue = document.getElementById("free-code-value");
+    const freeCodeTimer = document.getElementById("free-code-timer");
+    const freeCodeCopyBtn = document.getElementById("free-code-copy-btn");
+
+    function showMessage(msg, type, cardDisplayName) {
+      if (type === "success") {
+        resultDiv.innerHTML = `<div class="redeem-success">${msg}</div>`
+          + (cardDisplayName ? `<div class="card-earned">🎉 Unlocked: <b>${cardDisplayName}</b></div>` : "");
+      } else {
+        resultDiv.innerHTML = `<div class="redeem-error">${msg}</div>`;
+      }
+    }
+
+    submitBtn.addEventListener("click", tryRedeemCode);
+
+    codeInput.addEventListener("keydown", function(e) {
+      if (e.key === "Enter") {
+        tryRedeemCode();
+      }
+    });
+
+    function tryRedeemCode() {
+      const entered = String(codeInput.value).replace(/\s+/g,'');
+      const found = validateRedeemCode(entered);
+      if (!found) {
+        showMessage("Please enter a valid 13-digit code.", "error");
+        return;
+      }
+      if (isCodeUsed(entered)) {
+        showMessage("That code has already been redeemed.", "error");
+        return;
+      }
+
+      const cardInfo = getCardDataById(found.reward);
+      if (!cardInfo) {
+        showMessage("Sorry, this reward is temporarily unavailable. Please contact support.", "error");
+        return;
+      }
+      const success = giveRewardCard(found.reward);
+      if (success) {
+        addUsedCode(found.code);
+        showMessage("Success! Redeemed Code.", "success", cardInfo.name);
+        codeInput.value = "";
+      } else {
+        showMessage("An error occurred giving you this card. Please try again.", "error");
+      }
+    }
+
+    function copyToClipboard(value) {
+      if (navigator.clipboard && window.isSecureContext) {
+        navigator.clipboard.writeText(value);
+      } else {
+        let tempInput = document.createElement("input");
+        tempInput.value = value;
+        document.body.appendChild(tempInput);
+        tempInput.select();
+        document.execCommand("copy");
+        tempInput.remove();
+      }
+    }
+
+    function updateFreeCodeDisplay() {
+      const {code, ts} = getCurrentFreeCodeObj();
+      freeCodeValue.textContent = code;
+      updateFreeCodeTimer(ts);
+    }
+
+    function updateFreeCodeTimer(ts) {
+      let interval = FREE_CODE_INTERVAL_MS;
+      let now = Date.now();
+      let next = ts + interval;
+      let diff = next - now;
+      if (diff <= 0) {
+        freeCodeTimer.textContent = "New code available!";
+        setTimeout(updateFreeCodeDisplay, 700);
+        return;
+      }
+      let h = Math.floor(diff/3600000);
+      let m = Math.floor((diff % 3600000) / 60000);
+      let s = Math.floor((diff % 60000)/1000);
+      let pad = n => ('' + n).padStart(2, '0');
+      freeCodeTimer.textContent = `Next in ${pad(h)}:${pad(m)}:${pad(s)}`;
+      setTimeout(() => updateFreeCodeTimer(ts), 1000);
+    }
+
+    updateFreeCodeDisplay();
+
+    freeCodeCopyBtn.addEventListener("click", function() {
+      copyToClipboard(freeCodeValue.textContent);
+      freeCodeCopyBtn.textContent = "Copied!";
+      setTimeout(() => {
+        freeCodeCopyBtn.textContent = "Copy";
+      }, 1000);
+    });
+
+    window.addEventListener("storage", function(e) {
+      if (
+        e.key === USED_CODES_KEY ||
+        e.key === USED_CODES_TIMESTAMP_KEY ||
+        e.key === FREE_CODE_STORAGE_KEY ||
+        e.key === FREE_CODE_TS_KEY
+      ) {
+        updateFreeCodeDisplay();
+      }
+    });
+
+    resetUsedCodesIfNeeded();
+  </script>
+</body>
+</html>

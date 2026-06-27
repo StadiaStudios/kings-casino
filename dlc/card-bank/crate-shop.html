@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>King's Casino - Crate Shop</title>
+    <link rel="manifest" href="../../manifest.json">
+    <meta name="theme-color" content="#0B0C10">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-title" content="King's Casino DLC">
+    <link rel="apple-touch-icon" href="../../resources/icon.png">
+    <link rel="icon" href="../../resources/icon.png" type="image/png">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&display=swap');
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Fredoka', sans-serif;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+        html, body {
+            height: 100%;
+            width: 100%;
+            overflow: hidden;
+            background-color: #110517;
+        }
+        .game-viewport {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            background: radial-gradient(circle at 50% 30%, #2a113d 0%, #110517 80%);
+        }
+        .hud-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            z-index: 10;
+        }
+        .nav-group {
+            display: flex;
+            gap: 10px;
+        }
+        .btn-custom {
+            background: rgba(0,0,0,0.6);
+            border: 2px solid #5a3654;
+            color: #fff;
+            padding: 8px 18px;
+            border-radius: 20px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+        }
+        .btn-vendor {
+            border-color: #e67e22;
+            color: #e67e22;
+        }
+        .btn-goto-redeem {
+            border-color: #38ca77;
+            color: #38ca77;
+            margin-left: 10px;
+        }
+        .currency-display {
+            position: relative;
+            display: flex;
+            align-items: center;
+            background: rgba(0,0,0,0.6);
+            border-radius: 30px;
+            padding: 5px 15px 5px 35px;
+            border: 2px solid #f1c40f;
+        }
+        .coin-icon {
+            position: absolute;
+            left: -10px;
+            width: 40px;
+            height: 40px;
+            background: radial-gradient(circle, #f1c40f, #f39c12);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border: 2px solid #fff;
+        }
+        .balance-text {
+            color: #fff;
+            font-size: 1.3rem;
+            font-weight: 700;
+        }
+        .main-split {
+            flex: 1;
+            display: flex;
+            overflow: hidden;
+            padding: 10px 20px 20px;
+            gap: 20px;
+        }
+        .crate-section {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: rgba(25, 14, 36, 0.6);
+            border: 2px solid #4a2861;
+            border-radius: 24px;
+            padding: 20px;
+            position: relative;
+        }
+        .dlc-header {
+            font-size: 2.2rem;
+            text-transform: uppercase;
+            font-weight: 700;
+            background: linear-gradient(to bottom, #d5a6bd, #9b59b6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-align: center;
+            margin-bottom: 15px;
+        }
+        .crate-box {
+            width: 180px;
+            height: 180px;
+            margin: 10px 0;
+            cursor: pointer;
+            transition: transform 0.2s;
+            filter: drop-shadow(0 10px 15px rgba(0,0,0,0.6));
+        }
+        .crate-box:active {
+            transform: scale(0.95);
+        }
+        .buy-crate-btn {
+            background: linear-gradient(to bottom, #f39c12, #d35400);
+            border: 3px solid #f1c40f;
+            box-shadow: 0 5px 0 #a04000;
+            border-radius: 30px;
+            padding: 12px 35px;
+            color: white;
+            font-size: 1.4rem;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        .buy-crate-btn:active {
+            transform: translateY(5px);
+            box-shadow: 0 0 0 #a04000;
+        }
+        .free-crate-btn {
+            background: linear-gradient(to bottom, #50e3c2, #00b894);
+            border: 3px solid #00e6b2;
+            box-shadow: 0 5px 0 #00886b;
+            border-radius: 30px;
+            padding: 12px 35px;
+            color: white;
+            font-size: 1.2rem;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 10px;
+            margin-bottom: 10px;
+            opacity: 1;
+            transition: opacity 0.2s;
+        }
+        .free-crate-btn:disabled,
+        .free-crate-btn[disabled] {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        .inventory-preview-section {
+            flex: 1.2;
+            display: flex;
+            flex-direction: column;
+            background: rgba(0,0,0,0.4);
+            border-radius: 24px;
+            border: 2px solid #2c1e36;
+            padding: 20px;
+        }
+        .panel-title {
+            color: #fff;
+            font-size: 1.4rem;
+            margin-bottom: 15px;
+            border-bottom: 2px solid #2c1e36;
+            padding-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+        }
+        .inventory-grid {
+            flex: 1;
+            overflow-y: auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+            gap: 15px;
+            padding-right: 5px;
+        }
+        .reward-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(7, 3, 10, 0.95);
+            z-index: 100;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+        .reward-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+        .reward-glow {
+            width: 220px;
+            height: 280px;
+            border-radius: 16px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            transform: scale(0.7);
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 0 40px rgba(255,255,255,0.1);
+        }
+        .reward-overlay.active .reward-glow {
+            transform: scale(1);
+        }
+        @media (max-width: 700px) {
+            .btn-custom .btn-text {
+                display: none;
+            }
+            .btn-custom .btn-emoji {
+                display: inline;
+                font-size: 1.5rem;
+            }
+            .btn-custom {
+                padding: 8px 13px;
+                font-size: 1.3rem;
+                min-width: 44px;
+                min-height: 44px;
+                justify-content: center;
+            }
+        }
+        @media (min-width: 701px) {
+            .btn-custom .btn-text {
+                display: inline;
+            }
+            .btn-custom .btn-emoji {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <audio id="purchase-sfx" src="sfx/menu-ui.mp3" preload="auto"></audio>
+    <div class="game-viewport">
+        <div class="hud-top">
+            <div class="nav-group">
+                <a href="../../index.html" class="btn-custom">
+                    <span class="btn-emoji">◀</span>
+                    <span class="btn-text">Back</span>
+                </a>
+                <a href="card-vendor.html" class="btn-custom btn-vendor">
+                    <span class="btn-emoji">🏪</span>
+                    <span class="btn-text">Card Vendor</span>
+                </a>
+                <a href="redeem.html" class="btn-custom btn-goto-redeem">
+                    <span class="btn-emoji">🔑</span>
+                    <span class="btn-text">Redeem Code</span>
+                </a>
+            </div>
+            <div class="currency-display">
+                <div class="coin-icon">
+                    <img style="width:30px;height:30px;" src="resources/items/chip.png" alt="Chip">
+                </div>
+                <span class="balance-text" id="dlc-balance">0</span>
+            </div>
+        </div>
+        <div class="main-split">
+            <div class="crate-section">
+                <h1 class="dlc-header">Card Crates</h1>
+                <p style="color: #a29bfe; font-size: 0.95rem; margin-bottom: 15px; text-align: center;">
+                    Test your luck for a Legendary drop!<br>
+                    <span style="color:#36e2a1;">Get 1 Free Crate open every day!</span>
+                </p>
+                <button class="free-crate-btn" id="free-crate-btn" onclick="openFreeCrate()" style="display: none;">
+                    <img src="resources/items/crate1.png" alt="Crate" style="width: 24px; height: 24px;">
+                    <span id="free-crate-btn-label">Open Free Crate!</span>
+                </button>
+                <div class="crate-box" onclick="purchaseCrate()" style="background: linear-gradient(135deg, #8e44ad, #2c3e50); border: 4px dashed #bdc3c7; border-radius: 20px; display:flex; align-items:center; justify-content:center; color:#fff; font-size:3.5rem; text-shadow: 0 5px 10px #000;">
+                    <img src="resources/items/crate1.png" alt="Crate">
+                </div>
+                <button class="buy-crate-btn" onclick="purchaseCrate()">
+                    <img src="resources/items/chip.png" alt="Chips" style="width: 24px; height: 24px;">
+                    <span>15,000</span>
+                </button>
+            </div>
+            <div class="inventory-preview-section">
+                <div class="panel-title">
+                    <span>Your Collection</span>
+                    <span id="card-count" style="color: #9b59b6;">(0)</span>
+                </div>
+                <div class="inventory-grid" id="shop-inventory-grid"></div>
+            </div>
+        </div>
+    </div>
+    <div class="reward-overlay" id="reward-modal">
+        <h2 style="color: #fff; font-size: 2.5rem; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 30px;" id="reward-announcement">UNLOCKED</h2>
+        <div class="reward-glow" id="reward-card-container"></div>
+        <button class="btn-custom" onclick="closeReward()" style="margin-top: 40px; padding: 12px 40px; font-size: 1.2rem; background: #fff; color: #110517; border: none;">
+            CONFIRM
+        </button>
+    </div>
+    <script src="scripts/inventory.js"></script>
+    <script>
+        const CRATE_COST = 15000;
+        const FREE_CRATE_KEY = 'lastFreeCrateDateV2';
+        const FREE_CRATE_BTN_ID = 'free-crate-btn';
+
+        function getTodayKey() {
+            const now = new Date();
+            return now.getFullYear() + '-' + String(now.getMonth() + 1).padStart(2, '0') + '-' + String(now.getDate()).padStart(2, '0');
+        }
+
+        function refreshUI() {
+            const chips = InventorySystem.getChips();
+            document.getElementById('dlc-balance').innerText = chips.toLocaleString();
+            document.getElementById('card-count').innerText = `(${InventorySystem.getCards().length})`;
+            InventorySystem.renderGrid('shop-inventory-grid', 'view');
+            refreshFreeCrateButton();
+        }
+
+        function purchaseCrate() {
+            const chips = InventorySystem.getChips();
+            if (chips >= CRATE_COST) {
+                InventorySystem.setChips(chips - CRATE_COST);
+                const rolledCard = InventorySystem.rollCrate();
+                InventorySystem.addCard(rolledCard.id);
+
+                const sfx = document.getElementById('purchase-sfx');
+                if (sfx) { sfx.currentTime = 0; sfx.play().catch(() => {}); }
+
+                showReward(rolledCard);
+                refreshUI();
+            } else {
+                alert("Insufficient funds! Standard crates require 15,000 chips.");
+            }
+        }
+
+        function refreshFreeCrateButton() {
+            const freeCrateBtn = document.getElementById(FREE_CRATE_BTN_ID);
+            if (!freeCrateBtn) return;
+            const today = getTodayKey();
+            const lastOpen = (typeof localStorage !== "undefined") ? localStorage.getItem(FREE_CRATE_KEY) : null;
+
+            if (lastOpen !== today) {
+                freeCrateBtn.disabled = false;
+                freeCrateBtn.style.display = "";
+                document.getElementById('free-crate-btn-label').innerText = "Open Free Crate!";
+            } else {
+                freeCrateBtn.disabled = true;
+                freeCrateBtn.style.display = "";
+                document.getElementById('free-crate-btn-label').innerText = "Free Crate: Already Claimed Come back Tomorrow!";
+            }
+        }
+
+        function openFreeCrate() {
+            const today = getTodayKey();
+            const lastOpen = (typeof localStorage !== "undefined") ? localStorage.getItem(FREE_CRATE_KEY) : null;
+
+            if (lastOpen === today) {
+                alert("You have already claimed your free crate for today. Come back tomorrow!");
+                refreshFreeCrateButton();
+                return;
+            }
+            const rolledCard = InventorySystem.rollCrate();
+            InventorySystem.addCard(rolledCard.id);
+
+            if (typeof localStorage !== "undefined") {
+                localStorage.setItem(FREE_CRATE_KEY, today);
+            }
+
+            const sfx = document.getElementById('purchase-sfx');
+            if (sfx) { sfx.currentTime = 0; sfx.play().catch(() => {}); }
+
+            showReward(rolledCard);
+            refreshUI();
+        }
+
+        function showReward(card) {
+            const modal = document.getElementById('reward-modal');
+            const container = document.getElementById('reward-card-container');
+            const rarityColor = InventorySystem.getRarityColor(card.rarity);
+
+            container.style.background = `linear-gradient(180deg, #2e1d3c 0%, #170d22 100%)`;
+            container.style.border = `3px solid ${rarityColor}`;
+            container.style.boxShadow = `0 0 50px ${rarityColor}80`;
+
+            container.innerHTML = `
+                <span style="color: ${rarityColor}; font-weight:700; font-size:1rem; letter-spacing:1px; margin-bottom:10px;">${card.rarity.toUpperCase()}</span>
+                <img src="${card.img}" style="width:110px; height:150px; object-fit:contain; filter: drop-shadow(0 5px 15px rgba(0,0,0,0.6)); margin-bottom:15px;">
+                <h3 style="color:#fff; font-size:1.5rem; text-align:center;">${card.name}</h3>
+            `;
+
+            document.getElementById('reward-announcement').style.color = rarityColor;
+            modal.classList.add('active');
+        }
+
+        function closeReward() {
+            document.getElementById('reward-modal').classList.remove('active');
+        }
+
+        setInterval(refreshFreeCrateButton, 60 * 1000);
+
+        window.addEventListener('DOMContentLoaded', refreshUI);
+        window.addEventListener('storage', refreshUI);
+    </script>
+    <script src="sfx/card-shop.js"></script>
+</body>
+</html>
