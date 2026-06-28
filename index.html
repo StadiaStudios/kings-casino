@@ -32,16 +32,62 @@
         }
 
         html, body {
-            height: 100%;
             width: 100%;
-            overflow: hidden;
+            min-height: 100vh;
             background-color: var(--bg-color);
+            overflow-x: hidden;
+        }
+
+        body {
+            min-height: 100vh;
+        }
+
+        html::-webkit-scrollbar,
+        body::-webkit-scrollbar {
+            width: 7px;
+            background: rgba(20, 20, 30, 0.15);
+        }
+        html::-webkit-scrollbar-thumb,
+        body::-webkit-scrollbar-thumb {
+            background: linear-gradient(135deg, var(--gold-secondary), var(--gold-primary) 90%);
+            border-radius: 8px;
+            min-height: 48px;
+            border: 2px solid rgba(11, 12, 16, 0.6);
+            box-shadow: 0 2px 4px rgba(212,175,55,0.09);
+        }
+        html::-webkit-scrollbar-track,
+        body::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        html, body {
+            scrollbar-width: thin;
+            scrollbar-color: var(--gold-primary) rgba(20,20,30,0.10);
+        }
+
+        .game-viewport,
+        .main-menu,
+        .mode-selector-wrapper {
+            scrollbar-width: thin;
+            scrollbar-color: var(--gold-primary) rgba(20,20,30,0.10);
+        }
+        .game-viewport::-webkit-scrollbar,
+        .main-menu::-webkit-scrollbar,
+        .mode-selector-wrapper::-webkit-scrollbar {
+            width: 7px;
+            background: rgba(20, 20, 30, 0.15);
+        }
+        .game-viewport::-webkit-scrollbar-thumb,
+        .main-menu::-webkit-scrollbar-thumb,
+        .mode-selector-wrapper::-webkit-scrollbar-thumb {
+            background: linear-gradient(135deg, var(--gold-secondary), var(--gold-primary) 90%);
+            border-radius: 8px;
+            border: 2px solid rgba(11, 12, 16, 0.6);
         }
 
         .game-viewport {
             position: relative;
             width: 100vw;
-            height: 100vh;
+            min-height: 100vh;
             display: flex;
             flex-direction: column;
             background: radial-gradient(circle at 50% 0%, #1f222e 0%, #0B0C10 80%);
@@ -272,6 +318,7 @@
         .btn-derby { --accent-color: #9D00FF; border-color: rgba(255,255,255,0.08); }
         .btn-vip { --accent-color: #FFD700; border: 1px solid var(--gold-primary); background: linear-gradient(145deg, rgba(212,175,55,0.1) 0%, rgba(0,0,0,0.7) 100%); }
         .btn-cardcrates { --accent-color: #3572ef; border: 1px solid #3572ef; background: linear-gradient(145deg, rgba(53,114,239,0.12) 0%, rgba(0,0,0,0.67) 100%); }
+        .btn-chatdice { --accent-color: #ffb347; border: 1px solid #ffb347; background: linear-gradient(145deg, rgba(255,179,71,0.15) 0%, rgba(0,0,0,0.7) 100%); }
 
         .btn-vip.locked {
             --accent-color: #777;
@@ -279,6 +326,11 @@
             filter: grayscale(1);
         }
         .btn-cardcrates.locked {
+            --accent-color: #777;
+            border-color: #444;
+            filter: grayscale(1);
+        }
+        .btn-chatdice.locked {
             --accent-color: #777;
             border-color: #444;
             filter: grayscale(1);
@@ -357,6 +409,7 @@
 
         .mode-selector-wrapper::-webkit-scrollbar { width: 4px; }
         .mode-selector-wrapper::-webkit-scrollbar-thumb { background: var(--gold-primary); border-radius: 4px; }
+   
     </style>
 </head>
 <body>
@@ -424,11 +477,22 @@
                         </div>
                     </div>
 
+                    <div class="btn-3d btn-chatdice" id="chatdice-btn">
+                        <div class="btn-content" id="chatdice-btn-content">
+                            <h2>Chat Dice</h2>
+                            <p>Roll &amp; Chat</p>
+                            <button id="chatdice-buy-btn" class="buy-btn" style="margin-top:15px;display:none;">Buy $20K</button>
+                        </div>
+                        <div class="btn-icon">
+                            <img src="resources/ui/chat-dice.png" alt="Chat Dice" style="width:84px;height:84px;">
+                        </div>
+                    </div>
+
                     <div class="btn-3d btn-cardcrates" id="card-crates-btn">
                         <div class="btn-content" id="card-crates-btn-content">
                             <h2>Card Crates</h2>
                             <p>Collect &amp; Win</p>
-                            <button id="card-crates-buy-btn" class="buy-btn" style="margin-top:15px;display:none;">Buy $500K</button>
+                            <button id="card-crates-buy-btn" class="buy-btn" style="margin-top:15px;display:none;">Buy $100K</button>
                         </div>
                         <div class="btn-icon">
                             <img src="dlc/card-bank/resources/items/crate1.png" alt="Card Crates" style="width:84px;height:84px;">
@@ -518,8 +582,10 @@
         const VIP_UNLOCKED_KEY = 'kings-casino-vip-owned';
         const VIP_COST = 200000;
         const CARDCRATES_UNLOCKED_KEY = 'kings-casino-cardcrates-owned';
-        const CARDCRATES_COST = 500000;
-        
+        const CARDCRATES_COST = 100000;
+        const CHATDICE_UNLOCKED_KEY = 'kings-casino-chatdice-owned';
+        const CHATDICE_COST = 20000;
+
         function getBalance() {
             let bal = parseInt(localStorage.getItem(STORAGE_KEY), 10);
             if (isNaN(bal)) {
@@ -564,6 +630,13 @@
             localStorage.setItem(CARDCRATES_UNLOCKED_KEY, "1");
         }
 
+        function isChatDiceOwned() {
+            return localStorage.getItem(CHATDICE_UNLOCKED_KEY) === "1";
+        }
+        function setChatDiceOwned() {
+            localStorage.setItem(CHATDICE_UNLOCKED_KEY, "1");
+        }
+
         function setupCardCratesBtn() {
             const btn = document.getElementById('card-crates-btn');
             const buyBtn = document.getElementById('card-crates-buy-btn');
@@ -588,7 +661,7 @@
                     buyBtn.disabled = true;
                     buyBtn.style.background = "#bbb";
                     setTimeout(() => {
-                        buyBtn.innerText = "Buy $500K";
+                        buyBtn.innerText = "Buy $100K";
                         buyBtn.disabled = false;
                         buyBtn.style.background = "";
                     }, 1200);
@@ -650,9 +723,53 @@
             updateVipBtnState();
         }
 
+        function setupChatDiceBtn() {
+            const chatDiceBtn = document.getElementById('chatdice-btn');
+            const chatDiceBuyBtn = document.getElementById('chatdice-buy-btn');
+
+            function updateChatDiceBtnState() {
+                if (isChatDiceOwned()) {
+                    chatDiceBuyBtn.style.display = 'none';
+                    chatDiceBtn.onclick = function() { playGame('chat-dice.html'); };
+                    chatDiceBtn.classList.remove('locked');
+                } else {
+                    chatDiceBuyBtn.style.display = '';
+                    chatDiceBtn.onclick = null;
+                    chatDiceBtn.classList.add('locked');
+                }
+            }
+
+            chatDiceBuyBtn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                const balance = getBalance();
+                if (balance < CHATDICE_COST) {
+                    chatDiceBuyBtn.innerText = "Not Enough!";
+                    chatDiceBuyBtn.disabled = true;
+                    chatDiceBuyBtn.style.background = "#bbb";
+                    setTimeout(() => {
+                        chatDiceBuyBtn.innerText = "Buy $20K";
+                        chatDiceBuyBtn.disabled = false;
+                        chatDiceBuyBtn.style.background = "";
+                    }, 1200);
+                    return;
+                }
+                setBalance(balance - CHATDICE_COST);
+                setChatDiceOwned();
+                updateLobbyBalanceDisplay();
+                updateChatDiceBtnState();
+                chatDiceBuyBtn.innerText = "Purchased!";
+                setTimeout(() => {
+                    chatDiceBuyBtn.style.display = 'none';
+                }, 1000);
+            });
+
+            updateChatDiceBtnState();
+        }
+
         document.addEventListener('DOMContentLoaded', function() {
             setupVipRoomBtn();
             setupCardCratesBtn();
+            setupChatDiceBtn();
         });
 
         document.addEventListener('touchmove', function(e) {

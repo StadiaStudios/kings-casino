@@ -1,0 +1,668 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>King's Casino - Chat Dice</title>
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#110517">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-title" content="King's Casino">
+    <link rel="apple-touch-icon" href="resources/icon.png">
+    <link rel="icon" type="image/png" href="resources/title-ico.png">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&display=swap');
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Fredoka', sans-serif;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        html, body {
+            height: 100%;
+            width: 100%;
+            overflow: hidden;
+            background: radial-gradient(circle at 50% 30%, #000 0%, #000 80%);
+            color: #fff;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .hud-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            width: 100%;
+            z-index: 10;
+        }
+        .back-btn {
+            color: #fff;
+            text-decoration: none;
+            font-weight: bold;
+            background: rgba(0,0,0,0.6);
+            padding: 10px 15px;
+            border-radius: 12px;
+            border: 2px solid #f1c40f;
+            font-size: 1rem;
+            transition: transform 0.1s;
+            box-shadow: 0 4px 0 #b38f00;
+        }
+        .back-btn:active {
+            transform: translateY(4px);
+            box-shadow: 0 0 0 #b38f00;
+        }
+        .currency-display {
+            position: relative;
+            display: flex;
+            align-items: center;
+            background: rgba(0,0,0,0.6);
+            border-radius: 30px;
+            padding: 5px 15px 5px 35px;
+            border: 2px solid #f1c40f;
+            box-shadow: 0 0 10px rgba(241,196,15,0.3);
+        }
+        .coin-icon {
+            position: absolute;
+            left: -10px;
+            width: 40px;
+            height: 40px;
+            background: radial-gradient(circle,#f1c40f,#f39c12);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border: 2px solid #fff;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.5);
+        }
+        .balance-text {
+            color: #fff;
+            font-size: 1.2rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+        }
+        
+        .game-title {
+            text-align: center;
+            font-size: 2.5rem;
+            color: #f1c40f;
+            text-shadow: 0 4px 6px rgba(0,0,0,0.5);
+            margin-top: 5px;
+            text-transform: uppercase;
+        }
+
+        .chat-container {
+            flex: 1;
+            margin: 15px 20px 20px 20px;
+            background: rgba(20, 20, 20, 0.85);
+            border: 4px solid #f1c40f;
+            border-radius: 15px;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.6);
+        }
+
+        .chat-messages {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            user-select: text;
+            transition: background 0.3s, border-color 0.3s;
+        }
+
+        .chat-messages.theme-blue {
+            background: rgba(20, 30, 60, 0.88) !important;
+            border-color: #2196f3 !important;
+        }
+        .chat-messages.theme-red {
+            background: rgba(60, 20, 20, 0.88) !important;
+            border-color: #e74c3c !important;
+        }
+
+        .chat-messages.theme-blue .msg.system {
+            background: #1e2133 !important;
+            color: #90caf9 !important;
+            border: 1.5px solid #2196f3 !important;
+            text-shadow: 0 1px 0 #111a !important;
+        }
+        .chat-messages.theme-blue .msg.system-error {
+            background: #1e2e46 !important;
+            color: #dbeafe !important;
+            border: 1.5px solid #1976d2 !important;
+        }
+        .chat-messages.theme-blue .msg.user {
+            background: linear-gradient(135deg, #2196f3 60%, #1565c0 100%) !important;
+            color: #fff !important;
+            border: 1.5px solid #1565c0 !important;
+            box-shadow: 0 2px 8px 0 rgba(33,150,243,0.13) !important;
+        }
+        .chat-messages.theme-blue .msg.opponent {
+            background: linear-gradient(135deg, #42a5f5 80%, #0d47a1 100%) !important;
+            color: #fff !important;
+            border: 1.5px solid #1976d2 !important;
+            box-shadow: 0 2px 8px 0 rgba(33,150,243,0.08) !important;
+        }
+
+        .chat-messages.theme-red .msg.system {
+            background: #331616 !important;
+            color: #fa7575 !important;
+            border: 1.5px solid #e74c3c !important;
+            text-shadow: 0 1px 0 #111a !important;
+        }
+        .chat-messages.theme-red .msg.system-error {
+            background: #842929 !important;
+            color: #ffeaea !important;
+            border: 1.5px solid #c0392b !important;
+        }
+        .chat-messages.theme-red .msg.user {
+            background: linear-gradient(135deg, #e74c3c 60%, #94302a 100%) !important;
+            color: #fff !important;
+            border: 1.5px solid #c0392b !important;
+            box-shadow: 0 2px 8px 0 rgba(231,76,60,0.13) !important;
+        }
+        .chat-messages.theme-red .msg.opponent {
+            background: linear-gradient(135deg, #ff665a 80%, #6d1818 100%) !important;
+            color: #fff !important;
+            border: 1.5px solid #e74c3c !important;
+            box-shadow: 0 2px 8px 0 rgba(231,76,60,0.08) !important;
+        }
+
+        .chat-messages::-webkit-scrollbar {
+            width: 12px;
+            background: transparent;
+        }
+        .chat-messages::-webkit-scrollbar-thumb {
+            border-radius: 8px;
+            background: linear-gradient(135deg, #181f23 55%, #323b40 100%);
+            box-shadow: 0 2px 8px #000a;
+            border: 2px solid #181f23;
+        }
+        .chat-messages::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(135deg, #232d36 55%, #41525f 100%);
+        }
+        .chat-messages::-webkit-scrollbar-track {
+            background: rgba(0,0,0,0.05);
+            border-radius: 8px;
+        }
+
+        .chat-messages {
+            scrollbar-width: thin;
+            scrollbar-color: #232d36 rgba(48,48,48,0.05);
+        }
+
+        .msg {
+            padding: 10px 16px;
+            border-radius: 15px;
+            max-width: 85%;
+            line-height: 1.4;
+            font-size: 1.1rem;
+            word-wrap: break-word;
+            animation: fadeIn 0.2s ease-in-out;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(5px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .msg.system {
+            background: #222;
+            color: #f1c40f;
+            align-self: center;
+            text-align: center;
+            border: 1px solid #f1c40f;
+            font-weight: 600;
+            font-size: 1rem;
+        }
+        
+        .msg.system-error {
+            background: #641e16;
+            color: #ff9999;
+            align-self: center;
+            text-align: center;
+            border: 1px solid #e74c3c;
+            font-weight: 600;
+        }
+
+        .msg.user {
+            background: linear-gradient(135deg, #29b36b 60%, #1c5135 100%);
+            color: #1a1919;
+            align-self: flex-end;
+            border-bottom-right-radius: 4px;
+            box-shadow: 0 2px 6px 0 rgba(41,179,107,0.15);
+            border: 1.5px solid #1f934b;
+        }
+
+        .msg.opponent {
+            background: linear-gradient(135deg, #29b36b 60%, #1c5135 100%);
+            color: #1a1919;
+            align-self: flex-start;
+            border-bottom-left-radius: 4px;
+        }
+
+        .chat-input-area {
+            display: flex;
+            padding: 15px;
+            background: rgba(0,0,0,0.9);
+            border-top: 3px solid #f1c40f;
+        }
+
+        .chat-messages.theme-blue ~ .chat-input-area .chat-input:focus {
+            border-color: #2196f3 !important;
+        }
+        .chat-messages.theme-blue ~ .chat-input-area .chat-input {
+            border-color: #1976d2 !important;
+        }
+        .chat-messages.theme-red ~ .chat-input-area .chat-input:focus {
+            border-color: #e74c3c !important;
+        }
+        .chat-messages.theme-red ~ .chat-input-area .chat-input {
+            border-color: #c0392b !important;
+        }
+
+        .chat-input {
+            flex: 1;
+            padding: 12px 15px;
+            font-size: 1.1rem;
+            border-radius: 10px;
+            border: 2px solid #555;
+            background: #252525;
+            color: #fff;
+            outline: none;
+            transition: border-color 0.2s;
+            user-select: text;
+        }
+
+        .chat-input:focus {
+            border-color: #f1c40f;
+        }
+
+        .chat-messages.theme-blue ~ .chat-input-area .send-btn {
+            background: linear-gradient(to bottom, #2196f3 80%, #1976d2 100%) !important;
+            border: 2px solid #90caf9 !important;
+            box-shadow: 0 4px 0 #1565c0 !important;
+        }
+        .chat-messages.theme-red ~ .chat-input-area .send-btn {
+            background: linear-gradient(to bottom, #e74c3c 80%, #c0392b 100%) !important;
+            border: 2px solid #fecaca !important;
+            box-shadow: 0 4px 0 #9b1313 !important;
+        }
+        .send-btn {
+            margin-left: 10px;
+            background: linear-gradient(to bottom, #f1c40f, #d35400);
+            border: 2px solid #f9e79f;
+            border-radius: 10px;
+            color: #fff;
+            padding: 0 20px;
+            font-size: 1.2rem;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 4px 0 #935116;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.6);
+            transition: transform 0.1s, box-shadow 0.1s;
+        }
+
+        .send-btn:active {
+            transform: translateY(4px);
+            box-shadow: 0 0 0 #935116;
+        }
+        
+        .send-btn:disabled {
+            filter: grayscale(1);
+            cursor: not-allowed;
+            transform: translateY(4px);
+            box-shadow: 0 0 0 #935116;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="hud-top">
+        <a href="index.html" class="back-btn">⬅ Menu</a>
+        <div class="currency-display">
+            <div class="coin-icon">
+                <img style="width:26px;height:26px;" src="resources/items/chip.png" alt="Chip" onerror="this.style.display='none'; this.parentNode.innerHTML='💰'">
+            </div>
+            <span class="balance-text" id="balance-display">0</span>
+        </div>
+    </div>
+    
+    <h1 class="game-title" id="game-title">Chat Dice</h1>
+
+    <div class="chat-container">
+        <div class="chat-messages" id="chat-box">
+            <div class="msg system">Welcome to Chat Dice Arcade!</div>
+            <div class="msg system">Set your wager by typing <strong>/bet $100</strong> (minimum 100 chips).</div>
+            <div class="msg system">Once a bet is set, type <strong>/roll</strong> to play against a random opponent.</div>
+            <div class="msg system">Use /help for a full list of commands</div>
+        </div>
+        
+        <div class="chat-input-area">
+            <input type="text" id="chat-input" class="chat-input" placeholder="Type a command (/bet $..., /roll)" autocomplete="off">
+            <button id="send-btn" class="send-btn">SEND</button>
+        </div>
+    </div>
+
+    <script>
+        const STORAGE_KEY = 'kings-casino-chips';
+        const THEME_STORAGE_KEY = 'kings-casino-dice-theme';
+        const balanceDisplay = document.getElementById('balance-display');
+        const chatBox = document.getElementById('chat-box');
+        const chatInput = document.getElementById('chat-input');
+        const sendBtn = document.getElementById('send-btn');
+        const gameTitle = document.getElementById('game-title');
+        const chatMsgArea = document.getElementById('chat-box');
+
+        let currentBet = 0;
+        let isGameActive = false;
+        let hasNamedOpponent = false;
+        let currentOpponentName = null;
+        let currentColorTheme = "default";
+        let sessionStatsByOpponent = {};
+
+        const OPPONENT_NAMES = [
+            "Lucky Lou", "Dicey Dave", "Queen Bee", "Mister Chips", "The Gambler",
+            "Vera Royale", "Rolling Ron", "Lady Fortuna", "Czar Ivan", "Eddie Edge",
+            "Chipper", "Dice Diva", "Slick Rick", "High Stakes Han", "Baroness Bet",
+            "The Crusher", "Maria Mirage", "Risky Rita", "Slammin' Sam", "Vegas Vic"
+        ];
+        function getRandomOpponentName() {
+            return OPPONENT_NAMES[Math.floor(Math.random() * OPPONENT_NAMES.length)];
+        }
+
+        function getBalance() {
+            let bal = parseInt(localStorage.getItem(STORAGE_KEY), 10);
+            if (isNaN(bal)) bal = 100;
+            return bal;
+        }
+
+        function setBalance(amount) {
+            localStorage.setItem(STORAGE_KEY, amount);
+            balanceDisplay.innerText = amount.toLocaleString();
+        }
+
+        function syncBalance() {
+            balanceDisplay.innerText = getBalance().toLocaleString();
+        }
+
+        syncBalance();
+        window.addEventListener('storage', (e) => {
+            if (e.key === STORAGE_KEY) syncBalance();
+        });
+
+        function setChatTheme(theme, save = true) {
+            chatMsgArea.classList.remove('theme-blue', 'theme-red');
+            if (theme === 'blue') {
+                chatMsgArea.classList.add('theme-blue');
+                currentColorTheme = 'blue';
+            } else if (theme === 'red') {
+                chatMsgArea.classList.add('theme-red');
+                currentColorTheme = 'red';
+            } else {
+                currentColorTheme = 'default';
+            }
+            if (save) {
+                try {
+                    localStorage.setItem(THEME_STORAGE_KEY, currentColorTheme);
+                } catch (e) {}
+            }
+        }
+
+        function loadSavedTheme() {
+            try {
+                const savedTheme = localStorage.getItem(THEME_STORAGE_KEY);
+                if (savedTheme && (savedTheme === "blue" || savedTheme === "red")) {
+                    setChatTheme(savedTheme, false);
+                } else {
+                    setChatTheme("default", false);
+                }
+            } catch (e) {
+                setChatTheme("default", false);
+            }
+        }
+
+        loadSavedTheme();
+
+        function addMessage(text, type = 'system') {
+            const msgDiv = document.createElement('div');
+            msgDiv.className = `msg ${type}`;
+            chatBox.appendChild(msgDiv);
+            msgDiv.innerHTML = text;
+
+            if (currentColorTheme === 'blue' || currentColorTheme === 'red') {
+                setTimeout(() => {
+                    msgDiv.style.transition = "background 0.3s, border-color 0.3s, color 0.3s";
+                }, 1);
+            } else {
+                setTimeout(() => {
+                    msgDiv.style.transition = "";
+                }, 1);
+            }
+
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+
+        function parseInput(input) {
+            const rawText = input.trim();
+            const text = rawText.toLowerCase();
+            
+            if (text !== '') {
+                addMessage(input, 'user');
+            }
+
+            if (isGameActive) {
+                addMessage("Please wait for the current game to finish rolling.", 'system-error');
+                return;
+            }
+
+            if (text.startsWith("/color")) {
+                const colorArg = text.replace("/color", "").trim();
+                if (colorArg === "blue") {
+                    setChatTheme("blue");
+                    addMessage("Chat theme set to <strong>blue</strong>!", "system");
+                } else if (colorArg === "red") {
+                    setChatTheme("red");
+                    addMessage("Chat theme set to <strong>red</strong>!", "system");
+                } else if (colorArg === "" || colorArg === "default") {
+                    setChatTheme("default");
+                    addMessage("Chat theme set to <strong>default</strong>!", "system");
+                } else {
+                    addMessage("Usage: /color blue, /color red, or /color default", "system-error");
+                }
+                return;
+            }
+
+            if (text.startsWith("/switch opponent")) {
+                currentOpponentName = getRandomOpponentName();
+                hasNamedOpponent = true;
+                if (gameTitle) {
+                    gameTitle.textContent = currentOpponentName;
+                }
+                addMessage(`Opponent switched! New opponent is <strong>${currentOpponentName}</strong>.`, "system");
+                return;
+            }
+
+            if (
+                text === "/sessioninfo" ||
+                text === "/sessionstats" ||
+                text.startsWith("/sessioninfo") ||
+                text.startsWith("/sessionstats")
+            ) {
+                if (!currentOpponentName) {
+                    addMessage(
+                        "No opponent assigned yet. Set a bet first to get an opponent!", 
+                        "system-error"
+                    );
+                    return;
+                }
+                let stats = sessionStatsByOpponent[currentOpponentName];
+                if (!stats) stats = { gain: 0, loss: 0 };
+                const formattedGain = stats.gain.toLocaleString();
+                const formattedLoss = stats.loss.toLocaleString();
+                let summaryMsg = `<strong>Session Stats vs ${currentOpponentName}</strong>:<br>`;
+                summaryMsg += `Total Chips <span style="color: #6fed8f;">WON:</span> <strong style="color:#6fed8f;">+${formattedGain}</strong><br>`;
+                summaryMsg += `Total Chips <span style="color: #ed6f6f;">LOST:</span> <strong style="color:#ed6f6f;">-${formattedLoss}</strong>`;
+                addMessage(summaryMsg, "system");
+                return;
+            }
+
+            if (text === "/help") {
+                window.location.href = "resources/external/dice-command-list.txt";
+                return;
+            }
+
+            if (text.startsWith('/bet')) {
+                const betString = text.replace('/bet', '').replace('$', '').trim();
+                const betAmount = parseInt(betString, 10);
+
+                if (isNaN(betAmount) || betAmount < 100) {
+                    addMessage("Invalid bet amount! Minimum bet is 100 chips. Example: /bet $100", 'system-error');
+                    return;
+                }
+                if (betAmount > getBalance()) {
+                    addMessage("Not enough chips for that bet!", 'system-error');
+                    return;
+                }
+
+                currentBet = betAmount;
+
+                if (!hasNamedOpponent) {
+                    currentOpponentName = getRandomOpponentName();
+                    hasNamedOpponent = true;
+                    if (gameTitle) {
+                        gameTitle.textContent = currentOpponentName;
+                    }
+                }
+
+                addMessage(`Bet locked in at <strong>${currentBet.toLocaleString()}</strong> chips. Type <strong>/roll</strong> to toss the dice!`, 'system');
+                return;
+            }
+
+            if (text.startsWith('/roll')) {
+                if (currentBet <= 0) {
+                    addMessage("You must set a bet before rolling! Minimum bet is 100 chips. Type <strong>/bet $100</strong> to set a bet.", 'system-error');
+                    return;
+                }
+                if (currentBet > getBalance()) {
+                    addMessage("You no longer have enough chips to cover your current bet. Please set a lower /bet.", 'system-error');
+                    currentBet = 0;
+                    return;
+                }
+
+                playGame();
+                return;
+            }
+
+            if (text !== '') {
+                addMessage("Unknown command.", 'system-error');
+            }
+        }
+
+        function playGame() {
+            isGameActive = true;
+            sendBtn.disabled = true;
+            chatInput.disabled = true;
+
+            if (!currentOpponentName) {
+                currentOpponentName = getRandomOpponentName();
+                hasNamedOpponent = true;
+                if (gameTitle) {
+                    gameTitle.textContent = currentOpponentName;
+                }
+            }
+
+            let currentBal = getBalance();
+            setBalance(currentBal - currentBet);
+
+            function unbiasedRoll() {
+                if (window.crypto && window.crypto.getRandomValues) {
+                    const array = new Uint32Array(1);
+                    window.crypto.getRandomValues(array);
+                    return (array[0] % 100) + 1;
+                } else {
+                    return Math.floor(Math.random() * 100) + 1;
+                }
+            }
+
+            const userRoll = unbiasedRoll();
+            const opponentRoll = unbiasedRoll();
+
+            setTimeout(() => {
+                addMessage(`🎲 You rolled a <strong>${userRoll}</strong> out of 100!`, 'system');
+                addMessage(`${currentOpponentName} is rolling...`, 'opponent');
+                const opponentDelay = Math.floor(Math.random() * 9000) + 1000;
+
+                setTimeout(() => {
+                    addMessage(`🎲 ${currentOpponentName} rolled a <strong>${opponentRoll}</strong>.`, 'opponent');
+                    setTimeout(() => {
+                        if (!sessionStatsByOpponent[currentOpponentName]) {
+                            sessionStatsByOpponent[currentOpponentName] = { gain: 0, loss: 0 };
+                        }
+                        let stats = sessionStatsByOpponent[currentOpponentName];
+
+                        if (userRoll > opponentRoll) {
+                            const winnings = currentBet * 2;
+                            addMessage(`<strong>YOU WON!</strong> +${winnings.toLocaleString()} Chips!`, 'system');
+                            setBalance(getBalance() + winnings);
+                            stats.gain += currentBet;
+                        } else if (userRoll < opponentRoll) {
+                            addMessage(`<strong>You lost the round.</strong> Better luck next time!`, 'system');
+                            stats.loss += currentBet;
+                        } else {
+                            setBalance(getBalance() + currentBet);
+                            addMessage(`🤝 <strong>It's a tie!</strong> Your bet was returned.`, 'system');
+                        }
+
+                        currentBet = 0;
+                        isGameActive = false;
+                        sendBtn.disabled = false;
+                        chatInput.disabled = false;
+                        chatInput.focus();
+                        addMessage("Play again and set a new bet using <strong>/bet $amount</strong>", 'system');
+                    }, 1000);
+
+                }, opponentDelay);
+
+            }, 500);
+        }
+        
+        window.addEventListener('DOMContentLoaded', function() {
+            if (window.DiceChatSfx && sendBtn && chatInput) {
+                window.DiceChatSfx.setupDiceChatAudioForDiceHtml(sendBtn, chatInput);
+            }
+        });
+
+        sendBtn.addEventListener('click', () => {
+            const val = chatInput.value;
+            chatInput.value = '';
+            parseInput(val);
+        });
+
+        chatInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                const val = chatInput.value;
+                chatInput.value = '';
+                parseInput(val);
+            }
+        });
+
+        chatBox.addEventListener('click', () => {
+            if(!isGameActive) chatInput.focus();
+        });
+
+    </script>
+
+    <script src="sfx/dice-chat.js"></script>
+    <script src="scripts/first-click.js"></script>
+    <script src="scripts/piggy-bank.js"></script>
+</body>
+</html>
