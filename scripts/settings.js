@@ -4,7 +4,7 @@
         'kings-casino-username',
         'kings-casino-chips',
     ];
-    const APP_VERSION = 'V1.0.3 ALPHA';
+    const APP_VERSION = 'V1.0.4 ALPHA';
 
     function getUsername() {
         return localStorage.getItem(USERNAME_KEY) || 'Guest';

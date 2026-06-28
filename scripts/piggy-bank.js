@@ -329,32 +329,32 @@
     }
 
     function updatePiggyIcon() {
-        let icon = document.getElementById('piggy-btn');
-        function getPiggyIconSrc() {
-            const chipsToClaim = availableBankChips();
-            if (chipsToClaim >= 5000) {
-                return "resources/ui/piggy-bank-gold.png";
-            } else if (chipsToClaim >= 100) {
-                return "resources/ui/piggy-bank.png";
-            } else {
-                return "resources/ui/piggy-bank-empty.png";
-            }
-        }
+    let icon = document.getElementById('piggy-btn');
+    
+    const isHidden = localStorage.getItem('kings-casino-piggy-hidden') === 'true';
 
-        if (!icon) {
-            icon = document.createElement('img');
-            icon.id = 'piggy-btn';
-            icon.src = getPiggyIconSrc();
-            icon.style.cssText = "position:fixed;bottom:20px;right:20px;width:80px;cursor:pointer;z-index:9998;";
-            icon.onclick = createPiggyPopup;
-            document.body.appendChild(icon);
-
-            if (isHidden) icon.style.display = 'none';
-        } else {
-            icon.src = getPiggyIconSrc();
-            icon.style.display = isHidden ? 'none' : '';
-        }
+    function getPiggyIconSrc() {
+        const chipsToClaim = availableBankChips();
+        if (chipsToClaim >= 5000) return "resources/ui/piggy-bank-gold.png";
+        if (chipsToClaim >= 100) return "resources/ui/piggy-bank.png";
+        return "resources/ui/piggy-bank-empty.png";
     }
+
+    if (!icon) {
+        icon = document.createElement('img');
+        icon.id = 'piggy-btn';
+        icon.src = getPiggyIconSrc();
+        icon.style.cssText = "position:fixed;bottom:20px;right:20px;width:80px;cursor:pointer;z-index:9998;";
+        icon.onclick = createPiggyPopup;
+        document.body.appendChild(icon);
+    } else {
+        icon.src = getPiggyIconSrc();
+    }
+
+    icon.style.display = isHidden ? 'none' : '';
+}
+
+document.addEventListener('DOMContentLoaded', updatePiggyIcon);
 
     (function initialize_collected_playtime() {
         const playtime = parseInt(localStorage.getItem(PIGGY_PLAYTIME) || "0", 10);
