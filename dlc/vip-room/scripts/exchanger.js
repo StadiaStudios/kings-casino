@@ -1,5 +1,5 @@
 (function() {
-    const UPGRADE_COST = 5000000;
+    const UPGRADE_COST = 100000000;
     const BASE_TIME_MS = 15 * 60 * 1000;
     const UPGRADED_TIME_MS = 5 * 60 * 1000;
     const EXCHANGE_RATE = 10;
@@ -133,7 +133,7 @@
                 <div class="upgrade-section" id="exchanger-upgrade-section">
                     <p class="exchanger-upgrade-copy">Accelerate processing and cut the wait down to just 5 minutes.</p>
                     <button class="exchanger-btn" id="exchanger-upgrade-btn" style="background: linear-gradient(90deg, #C0C0C0, #E8E8E8);">
-                        Upgrade for 5,000,000
+                        Upgrade for 100,000,000
                     </button>
                 </div>
             </div>
