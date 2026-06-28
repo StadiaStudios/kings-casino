@@ -1,3 +1,8 @@
+v1.0.4 - - - - - - - - - June 27th, 2026 - - - Alpha -
+Minor Bug Fixes And Improvements to Card Crates, PiggyBank and First Click Screens added to Card Crate DLC, DLC Price Adjustments,
+Fixes PiggyBank Hide Not Working, Upgrade Cost of Timer Change in VIP Exchanger to 100M, Chat Dice Added, 6 Total Chat Dice Commands, 
+Layout fixes to Daily Gifts in Home, Layout Changes in home,
+
 v1.0.3 - - - - - - - - - June 27th, 2026 - - Card Vendor DLC - Alpha -
 Bug Fixes To Trophies Modal, Fixes to Tutorial Screen, Added Backstory aka - The Legend Of King's Casino, New Trophy Unlock Sfx, Show/Hide PiggyBank in Settings,
 Card Vendor Will let you sell and buy game cards-Which can be traded in for money, Sell All Cards, Sell Individually, Retail Price Display, Redeem Codes, 
