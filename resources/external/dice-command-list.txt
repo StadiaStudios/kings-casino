@@ -1,0 +1,15 @@
+Customization
+/color (blue, red, default) - Changes Chat theme
+/setusername (blank) - set your username
+
+Gameplay
+/bet ($100 - infinite) - Place your bet
+/roll - Roll the Dice
+
+Misc
+/switch opponent - Switchs your opponent
+/sessioninfo - Displays how much you've lost/gained in the current session
+/help - Shows full List of Commands
+/money - lists your opponents current balance
+/stats - shows your overall stats in chat dice
+/partymode - triggers a party chat until refreshed

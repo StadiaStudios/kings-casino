@@ -1,0 +1,56 @@
+v1.1.5 - - - - - - - - - June 29th, 2026 - - RiverHall Homes DLC/GamePad Support - Alpha -
+New Commands in Chat Dice, Stats in Chat Dice, Username Change in Chat Dice, Updated First Click Screen, Updates to Chip Exchange in VIP Room, Updates to Slot Machines in VIP Room,
+Minor Improvements to Games DLCS, Full GamePad Support, New Crowns System for Buying Furniture, Shop Enhancements, 3h Cooldown piggy bank upgrade removed, Overhaul to some scripts, 
+
+RiverHall Homes DLC: Includes 4 Player Homes, a Furniture store collection, Customization, And More! Rotate & Remove Options, 
+
+v1.0.4 - - - - - - - - - June 27th, 2026 - - - Alpha -
+Minor Bug Fixes And Improvements to Card Crates, PiggyBank and First Click Screens added to Card Crate DLC, DLC Price Adjustments,
+Fixes PiggyBank Hide Not Working, Upgrade Cost of Timer Change in VIP Exchanger to 100M, Chat Dice Added, 6 Total Chat Dice Commands, 
+Layout fixes to Daily Gifts in Home, Layout Changes in home,
+
+v1.0.3 - - - - - - - - - June 27th, 2026 - - Card Vendor DLC - Alpha -
+Bug Fixes To Trophies Modal, Fixes to Tutorial Screen, Added Backstory aka - The Legend Of King's Casino, New Trophy Unlock Sfx, Show/Hide PiggyBank in Settings,
+Card Vendor Will let you sell and buy game cards-Which can be traded in for money, Sell All Cards, Sell Individually, Retail Price Display, Redeem Codes, 
+Crate Shop Costs 500,000 Chips, 
+
+Card Vendor DLC. 
+4 Total Cards. 
+Card Vendor. 
+Redeem Cards.
+Card Shop. $15,000 a Crate.
+
+v1.0.2 - - - - - - - - - June 12th, 2026 - - VIP ROOM DLC - Alpha -
+Piggy Bank Coin changed to gold - The Piggy Bank will be empty with < 100. it will be filled with over 100, And Gold with over 5000. 
+Horse Race SFX Fix. Piggy Bank Enhancements such as break effect. VIP Room Expansion DLC. New Banners. VIP Cost 200,000 Chips. Free Daily VIP Gifts.
+Terms Of Service page updated. VIP Room Slot Machines. Luck upgrades removed from Slot Machines because it no longer works. Updated Main Menu. Settings-Trophies & Daily Crates Script Updates,
+Piggy Bank Now has a Max Capacity of 10,000 Chips However Storage upgrades can be bought, Updates to PopUp Modals, 3 New Trophies Added,
+
+Heres a Inclusion list On the VIP Room:
+Slot Machines (Higher Rewards, New Theme, Shop Enhancements)
+Derby Racing (New Theme, 3x Rewards, Alcohol Costs More)
+Silver Exchanger (15 Min Timer, Upgrade for 5M Chips)
+Casino Wheel (Higher Payouts, Daily Spins, Tickets)
+
+v1.0.1 - - - - - - - - - June 11th, 2026 - - Minor Balances - Alpha -
+Alcohol effect In Durby Dash Balanced. Minor Fixes to Slot Machine and Balances. Mobile App Manifest Improvements. More Upgrades to Slot Machines. 
+Casino Wheel Balances to Payouts. 
+- - - - - - - - - - -
+
+v1.0.0 - - - - - - - - - June 9th, 2026 - - First Day - Alpha -
+Welcome to RiverHall! Spin the Machines, Get the Horses racing, and most importantly.. keep That piggy bank collecting. 
+
+King's Casino Game is a browser based, casual Casino Game experience designed to entertain players with vibrant visuals, progressive challenges, and rewards. 
+Players spin digital slot machines and accumulate chips, while the game tracks their progress towards various trophies. Notable features include a streak-based daily gift system that rewards 
+returning players with escalating chip prizes and a robust trophy system that celebrates achievements ranging from total wins to special jackpots, playtime, and upgrade accomplishments. 
+The game's interface provides a responsive, modern modal popup system with animated, glowing canvas backdrops for a lively casino vibe. Users can personalize their experience through an in-game settings panel, which allows for username changes, easy trophy tracking, and a full progress reset for those who want a fresh start. animated notifications when you earn chips or unlock trophies, keeps players engaged and informed. All state and progress (chips, wins, trophies, etc.) are stored securely in localStorage, ensuring both privacy and continuity between sessions. The modular 
+code structure makes it easy to expand with new features, trophies, or slot machine varieties. Whether you’re aiming for the next win milestone or just logging in for your daily bonus, 
+King’s Casino Game delivers a fun, rewarding casino journey accessible from any modern web browser.
+- - - - - - - - - - -
+
+
+
+^^ ChangeLog Starts From Here ^^
+-------------------------------------------------------------------------------
+Display Info --
+v?.?.? - - - - - - - - - Date - - Title/Important - Release/Beta/Alpha/Blank -
