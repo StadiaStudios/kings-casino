@@ -12,6 +12,13 @@ King’s Casino Game delivers a fun, rewarding casino journey accessible from an
 VIP ROOM: 
 The VIP Room is a Whole new Dimension in Riverhall, The most popular Casino in the world at the palm of your tips. Once you hit that VIP Side of Life you know your making Major Bread. Features New Games, Old Games Remade, Increased Rewards, Etc. 
 
+Riverhall Homes DLC:
+Step into a new way to play with the RiverHall Homes DLC! Transform your King's Casino experience by unlocking custom player homes. Each Riverhall Home provides a unique, personalized living space where you can customize and arrange furniture, and decorate with exclusive furnishings won through gameplay or special events. Players compare their creations, The Riverhall Homes DLC expands immersion beyond the casino floor, enabling players to set goals for home upgrades, and collect rare cosmetics from Riverhall’s limited-time shops. This expansion brings a fresh layer of progression, social engagement, and creative expression—making every win at King’s Casino feel even more like coming home.
+
+Card Bank / Card Crates DLC:
+Unlock a new layer of excitement with the Card Bank/Card Crates DLC! This expansion introduces collectible card crates packed with rare, beautiful cards with unique King’s Casino themes. Collect, trade, and display your cards in your personal Card Bank gallery, show off your rarest finds, and complete collections for bonus rewards and exclusive cosmetics. With fresh collectibles released regularly, the Card Bank/Card Crates DLC adds strategic collecting and trading to your casino adventure—making every crate opening a thrilling surprise! Also redeem codes for cards.
+
+
 CONTENT NOTICE: 
 By accessing and playing Kings Casino, you acknowledge that you have read, understood, and agreed to these Terms of Use and our Privacy Policy. Your continued use of this application constitutes your consent to the collection and use of data as described, including the use of local storage for game progress, browser-based notifications, and the tracking of playtime to facilitate time-gated mechanics. If you do not agree to these terms, please discontinue use of the game immediately.
 

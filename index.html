@@ -312,13 +312,14 @@
             transform: scale(1.1) rotate(5deg);
         }
 
-        .btn-slots { --accent-color: #FF2A55; }
-        .btn-wheel { --accent-color: #00E676; }
-        .btn-pusher { --accent-color: #00D4FF; }
-        .btn-derby { --accent-color: #9D00FF; border-color: rgba(255,255,255,0.08); }
-        .btn-vip { --accent-color: #FFD700; border: 1px solid var(--gold-primary); background: linear-gradient(145deg, rgba(212,175,55,0.1) 0%, rgba(0,0,0,0.7) 100%); }
-        .btn-cardcrates { --accent-color: #3572ef; border: 1px solid #3572ef; background: linear-gradient(145deg, rgba(53,114,239,0.12) 0%, rgba(0,0,0,0.67) 100%); }
+        .btn-slots { --accent-color: #FF2A55; border: 1px solid #FF2A55; background: linear-gradient(145deg, rgba(255, 42, 85, 0.12) 0%, rgba(0,0,0,0.67) 100%); }
+        .btn-wheel { --accent-color: #00E676; border: 1px solid #00E676; background: linear-gradient(145deg, rgba(0,230,118,0.12) 0%, rgba(0,0,0,0.67) 100%); }
+        .btn-pusher { --accent-color: #00D4FF; border: 1px solid #00D4FF; background: linear-gradient(145deg, rgba(0,212,255,0.12) 0%, rgba(0,0,0,0.67) 100%); }
+        .btn-derby { --accent-color: #9D00FF; border: 1px solid #9D00FF; background: linear-gradient(145deg, rgba(157,0,255,0.14) 0%, rgba(0,0,0,0.67) 100%); }
+        .btn-home { --accent-color: #64C0FF; border: 1px solid #64C0FF; background: linear-gradient(145deg, rgba(100,192,255,0.12) 0%, rgba(0,0,0,0.60) 100%); }
         .btn-chatdice { --accent-color: #ffb347; border: 1px solid #ffb347; background: linear-gradient(145deg, rgba(255,179,71,0.15) 0%, rgba(0,0,0,0.7) 100%); }
+        .btn-cardcrates { --accent-color: #3572ef; border: 1px solid #3572ef; background: linear-gradient(145deg, rgba(53,114,239,0.12) 0%, rgba(0,0,0,0.67) 100%); }
+        .btn-vip { --accent-color: #FFD700; border: 1px solid var(--gold-primary); background: linear-gradient(145deg, rgba(212,175,55,0.1) 0%, rgba(0,0,0,0.7) 100%); }
 
         .btn-vip.locked {
             --accent-color: #777;
@@ -331,6 +332,31 @@
             filter: grayscale(1);
         }
         .btn-chatdice.locked {
+            --accent-color: #777;
+            border-color: #444;
+            filter: grayscale(1);
+        }
+        .btn-slots.locked {
+            --accent-color: #777;
+            border-color: #444;
+            filter: grayscale(1);
+        }
+        .btn-wheel.locked {
+            --accent-color: #777;
+            border-color: #444;
+            filter: grayscale(1);
+        }
+        .btn-pusher.locked {
+            --accent-color: #777;
+            border-color: #444;
+            filter: grayscale(1);
+        }
+        .btn-derby.locked {
+            --accent-color: #777;
+            border-color: #444;
+            filter: grayscale(1);
+        }
+        .btn-home.locked {
             --accent-color: #777;
             border-color: #444;
             filter: grayscale(1);
@@ -474,6 +500,17 @@
                         </div>
                         <div class="btn-icon">
                             <img src="resources/horse-racing/horse-2.png" alt="Horse" style="width:120px;height:84px;">
+                        </div>
+                    </div>
+
+                    <!-- New My Home game button -->
+                    <div class="btn-3d btn-home" onclick="playGame('dlc/riverhall-homes/home.html')">
+                        <div class="btn-content">
+                            <h2>My Home</h2>
+                            <p>Decorate &amp; Store</p>
+                        </div>
+                        <div class="btn-icon">
+                            <img src="dlc/riverhall-homes/resources/ui/home.png" alt="My Home" style="width:84px;height:84px;">
                         </div>
                     </div>
 
@@ -784,6 +821,7 @@
         }, { passive: false });
     </script>
 
+    <script src="scripts/gamepad.js"></script>
     <script src="scenes/introduction.js"></script>
     <script src="scenes/tutorial.js"></script>
     <script src="scripts/loading-screen.js"></script>

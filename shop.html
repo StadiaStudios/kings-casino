@@ -3,180 +3,207 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>King's Casino - Shop</title>
+    <title>King's Casino – Shop</title>
     <link rel="manifest" href="manifest.json">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-title" content="King's Casino">
     <link rel="apple-touch-icon" href="resources/icon.png">
-    <link rel="icon" type="image/png" href="resources/title-ico.png">
-    <meta name="theme-color" content="#110517">
+    <link rel="icon" type="image/png" href="resources/icon.png">
+    <meta name="theme-color" content="#111">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&display=swap');
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: 'Fredoka', sans-serif;
-            user-select: none;
-            -webkit-tap-highlight-color: transparent;
-        }
         html, body {
             height: 100%;
             width: 100%;
+            margin: 0;
+            padding: 0;
+            background: #111;
+            color: #e3e3e3;
+            font-family: 'Fredoka', sans-serif;
             overflow: hidden;
-            background-color: #110517;
+        }
+        * {
+            box-sizing: border-box;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
         }
         .game-viewport {
             position: relative;
-            width: 100%;
-            height: 100%;
+            width: 100vw;
+            height: 100vh;
+            min-height: 100%;
+            min-width: 100%;
             display: flex;
             flex-direction: column;
-            background: radial-gradient(circle at 50% 30%, #3d142b 0%, #110517 80%);
+            background: radial-gradient(circle at 50% 30%, #222 0%, #111 80%);
         }
         .hud-top {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 15px 20px;
+            padding: 18px 24px 10px 24px;
+            background: rgba(17,17,17,0.92);
             width: 100%;
             z-index: 10;
         }
         .back-btn {
-            background: rgba(0,0,0,0.6);
-            border: 2px solid #5a3654;
-            color: #fff;
-            padding: 8px 20px;
+            background: #18181b;
+            border: 2px solid #282828;
+            color: #e3e3e3;
+            padding: 9px 22px;
             border-radius: 20px;
-            font-size: 1.1rem;
+            font-size: 1.12rem;
             font-weight: 600;
             cursor: pointer;
             text-decoration: none;
+            box-shadow: 0 2px 8px #000d 0;
+            transition: background 0.17s, border 0.16s;
+        }
+        .back-btn:hover,
+        .back-btn:focus-visible {
+            background: #23232a;
+            border-color: #494949;
         }
         .currency-display {
             position: relative;
             display: flex;
             align-items: center;
-            background: rgba(0,0,0,0.6);
+            background: #191718;
             border-radius: 30px;
-            padding: 5px 15px 5px 35px;
-            border: 2px solid #f1c40f;
-            box-shadow: 0 0 10px rgba(241,196,15,0.3);
+            padding: 7px 17px 7px 39px;
+            border: 2.5px solid #ffe065;
+            box-shadow: 0 0 11px 0 rgba(176,153,38,0.18);
         }
         .coin-icon {
             position: absolute;
-            left: -10px;
-            width: 45px;
-            height: 45px;
-            background: radial-gradient(circle,#f1c40f,#f39c12);
+            left: -12px;
+            width: 44px;
+            height: 44px;
+            background: radial-gradient(circle,#f6ce3a,#c19009 70%,#78621c 100%);
             border-radius: 50%;
             display: flex;
             justify-content: center;
             align-items: center;
-            border: 3px solid #fff;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.5);
+            border: 3px solid #222;
+            box-shadow: 0 3px 7px rgba(0,0,0,0.55);
+        }
+        .coin-icon img {
+            width: 38px;
+            height: 38px;
+            filter: drop-shadow(0 1px 2px #0004);
         }
         .balance-text {
-            color: #fff;
-            font-size: 1.4rem;
+            color: #f8e179;
+            font-size: 1.36rem;
             font-weight: 700;
+            letter-spacing: 0.01em;
         }
         .shop-container {
             flex: 1;
-            padding: 20px;
+            padding: 28px 16px 18px 16px;
             overflow-y: auto;
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 20px;
+            gap: 24px;
         }
         .shop-header {
-            font-size: 3rem;
+            font-size: 2.3rem;
             text-align: center;
             text-transform: uppercase;
             font-weight: 700;
-            background: linear-gradient(to bottom, #f1c40f, #e67e22);
+            letter-spacing: 0.08em;
+            color: #ffeaa7;
+            background: linear-gradient(to bottom, #ffeaa7, #bfa044 90%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            filter: drop-shadow(0 4px 2px rgba(0,0,0,0.8));
-            margin-bottom: 10px;
+            background-clip: text;
+            margin-bottom: 8px;
+            filter: drop-shadow(0 4px 13px #010101d0);
         }
-        @keyframes cloudsFadeIn {
-            0% { 
-                opacity: 0; 
-                transform: translateY(30px) scale(0.95);
-                filter: blur(8px);
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px) scale(0.97);
+                filter: blur(14px);
             }
-            100% { 
-                opacity: 1; 
+            to {
+                opacity: 1;
                 transform: translateY(0) scale(1);
                 filter: blur(0);
             }
         }
         .shop-item {
             width: 100%;
-            max-width: 400px;
-            background: linear-gradient(135deg, #2c1e2d 0%, #1a101b 100%);
-            border: 2px solid #5a3654;
-            border-radius: 20px;
-            padding: 20px;
+            max-width: 430px;
+            background: linear-gradient(110deg, #000000 0%, #0a0a0a 100%);
+            border: 2.2px solid #342727;
+            border-radius: 18px;
+            padding: 25px 20px 22px 20px;
             display: flex;
             flex-direction: column;
             align-items: center;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.6);
-            animation: cloudsFadeIn 0.8s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+            box-shadow: 0 9px 18px #070404d0;
+            animation: fadeInUp 0.65s cubic-bezier(.22,1.01,.27,1.01) forwards;
             opacity: 0;
         }
         .item-icon {
             width: 100px;
             height: 100px;
-            margin-bottom: 15px;
-            filter: drop-shadow(0 8px 10px rgba(0,0,0,0.6));
+            margin-bottom: 16px;
+            filter: drop-shadow(0 8px 22px #1118);
         }
         .item-title {
-            color: #fff;
-            font-size: 1.8rem;
+            color: #ffeaa7;
+            font-size: 1.45rem;
             font-weight: 700;
-            margin-bottom: 5px;
+            margin-bottom: 8px;
             text-align: center;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.8);
+            text-shadow: 0 3px 6px #000b;
+            letter-spacing: 0.03em;
         }
         .item-desc {
-            color: #bdc3c7;
+            color: #b3b8bb;
             text-align: center;
-            font-size: 1rem;
-            margin-bottom: 20px;
-            line-height: 1.3;
+            font-size: 1.04rem;
+            margin-bottom: 22px;
+            line-height: 1.38;
+            font-weight: 400;
+            letter-spacing: 0.01em;
         }
         .buy-btn {
-            background: linear-gradient(to bottom, #2ecc71, #27ae60);
-            border: 3px solid #58d68d;
-            box-shadow: 0 6px 0 #1e8449, 0 10px 15px rgba(0,0,0,0.5);
-            border-radius: 30px;
-            padding: 12px 25px;
-            color: white;
-            font-size: 1.4rem;
+            background: linear-gradient(to bottom, #26c367, #075d2f 80%);
+            border: 2.7px solid #36bd75;
+            box-shadow: 0 7px 0 #192, 0 13px 17px rgba(0,0,0,0.37);
+            border-radius: 26px;
+            padding: 13px 29px;
+            color: #fff;
+            font-size: 1.18rem;
             font-weight: 700;
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 11px;
             cursor: pointer;
-            transition: transform 0.1s, background 0.2s;
+            transition: transform 0.08s, background 0.17s, border 0.14s;
         }
         .buy-btn:active {
             transform: translateY(6px);
-            box-shadow: 0 0 0 #1e8449, 0 4px 5px rgba(0,0,0,0.5);
+            box-shadow: 0 0 0 #1e8449, 0 4px 5px rgba(0,0,0,0.45);
+        }
+        .buy-btn:hover, .buy-btn:focus-visible {
+            background: linear-gradient(to bottom, #30dc94, #18864f 85%);
+            border-color: #5bf2b9;
         }
         .buy-btn.purchased {
-            background: linear-gradient(to bottom, #7f8c8d, #34495e);
-            border-color: #bdc3c7;
-            box-shadow: 0 6px 0 #2c3e50;
+            background: linear-gradient(to bottom, #7f8c8d, #232832 90%);
+            border-color: #7b8187;
+            box-shadow: 0 7px 0 #232832;
             cursor: not-allowed;
+            color: #cdcfd3;
         }
-        .buy-btn.purchased:active {
+        .buy-btn.purchased:active, .buy-btn.purchased:hover {
             transform: none;
-            box-shadow: 0 6px 0 #2c3e50;
         }
     </style>
 </head>
@@ -185,10 +212,10 @@
     <audio id="purchase-sfx" src="sfx/menu-ui.mp3" preload="auto"></audio>
     <div class="game-viewport">
         <div class="hud-top">
-            <a href="index.html" class="back-btn">◀ Back</a>
-            <div class="currency-display">
+            <a href="index.html" class="back-btn" aria-label="Back to main">◀ Back</a>
+            <div class="currency-display" title="Chip Balance">
                 <div class="coin-icon">
-                    <img style="width:40px;height:40px;" src="resources/items/chip.png" alt="Chip">
+                    <img src="resources/items/chip.png" alt="Chip Icon">
                 </div>
                 <span class="balance-text" id="shop-balance">100</span>
             </div>
@@ -196,23 +223,12 @@
         <div class="shop-container">
             <h1 class="shop-header">Upgrades</h1>
             <div class="shop-item" style="animation-delay: 0.1s;">
-                <img src="resources/ui/piggy-bank-gold.png" alt="Piggy Bank" class="item-icon">
+                <img src="resources/ui/piggy-bank-gold.png" alt="Golden Piggy Bank" class="item-icon">
                 <h2 class="item-title" id="piggy-title">Golden Piggy</h2>
-                <p class="item-desc" id="piggy-desc">Increase the Piggy Bank storage limit.</p>
-                <button class="buy-btn" id="buy-piggy-btn" onclick="buyPiggyUpgrade();playPurchaseSFX();">
-                    <img src="resources/items/chip.png" alt="Chips" style="width: 28px; height: 28px;">
+                <p class="item-desc" id="piggy-desc">Increase your Piggy Bank storage limit.</p>
+                <button class="buy-btn" id="buy-piggy-btn" onclick="buyPiggyUpgrade();playPurchaseSFX();" type="button" aria-live="polite">
+                    <img src="resources/items/chip.png" alt="Chips" style="width:28px;height:28px;">
                     <span id="piggy-btn-text">10,000</span>
-                </button>
-            </div>
-            <div class="shop-item" style="animation-delay: 0.2s;">
-                <img src="resources/ui/piggy-bank-boosted.png" alt="Piggy Boosted" class="item-icon">
-                <h2 class="item-title" id="cooldown-title">Piggy Express</h2>
-                <p class="item-desc" id="cooldown-desc">
-                    Reduce Piggy Bank collect cooldown by 3 hours!
-                </p>
-                <button class="buy-btn" id="buy-cooldown-btn" onclick="buyCooldownUpgrade();playPurchaseSFX();">
-                    <img src="resources/items/chip.png" alt="Chips" style="width: 28px; height: 28px;">
-                    <span id="cooldown-btn-text">35,000</span>
                 </button>
             </div>
         </div>
@@ -220,14 +236,11 @@
     <script>
         const STORAGE_KEY = 'kings-casino-chips';
         const UPGRADE_KEY = 'kings-casino-piggy-stage';
-        const COOLDOWN_UPGRADE_KEY = 'kings-casino-piggy-cooldown';
         const PIGGY_STAGES = {
             1: { maxCapacity: 10000, cost: 0 },
             2: { maxCapacity: 20000, cost: 10000000 },
             3: { maxCapacity: 100000, cost: 10000000 }
         };
-        const PIGGY_COOLDOWN_DEFAULT = 6 * 60 * 60 * 1000;
-        const PIGGY_COOLDOWN_UPGRADED = 3 * 60 * 60 * 1000;
 
         function setupBGM() {
             const bgmAudio = document.getElementById('bgm-audio');
@@ -236,13 +249,13 @@
             function playOnce() {
                 if (!played) {
                     played = true;
-                    bgmAudio.volume = 0.25;
+                    bgmAudio.volume = 0.21;
                     bgmAudio.play().catch(() => {});
                 }
                 window.removeEventListener('pointerdown', playOnce);
                 window.removeEventListener('keydown', playOnce);
             }
-            bgmAudio.volume = 0.25;
+            bgmAudio.volume = 0.21;
             const playPromise = bgmAudio.play();
             if (playPromise !== undefined) {
                 playPromise.catch(() => {
@@ -274,48 +287,6 @@
             return isNaN(lvl) ? 1 : Math.min(lvl, 3);
         }
 
-        function hasCooldownUpgrade() {
-            return localStorage.getItem(COOLDOWN_UPGRADE_KEY) === "1";
-        }
-        function updateCooldownUI() {
-            const btn = document.getElementById('buy-cooldown-btn');
-            const btnText = document.getElementById('cooldown-btn-text');
-            const desc = document.getElementById('cooldown-desc');
-            if (hasCooldownUpgrade()) {
-                btn.classList.add('purchased');
-                btn.onclick = null;
-                btnText.innerText = "MAXED";
-                const img = btn.querySelector('img');
-                if (img) img.style.display = 'none';
-                desc.innerText = "Cooldown reduced! Collect from Piggy Bank every 3 hours.";
-            } else {
-                btn.classList.remove('purchased');
-                btn.onclick = function() {
-                    buyCooldownUpgrade();
-                    playPurchaseSFX();
-                };
-                btnText.innerText = "35,000";
-                const img = btn.querySelector('img');
-                if (img) img.style.display = '';
-                desc.innerText = "Reduce Piggy Bank collect cooldown to 3 hours! (One time upgrade)";
-            }
-        }
-        function buyCooldownUpgrade() {
-            if (hasCooldownUpgrade()) return;
-            const cost = 35000;
-            const balance = getBalance();
-            if (balance >= cost) {
-                setBalance(balance - cost);
-                localStorage.setItem(COOLDOWN_UPGRADE_KEY, "1");
-                playPurchaseSFX();
-                updateCooldownUI();
-                alert("Piggy Bank now has a 3 hour cooldown!");
-            } else {
-                playPurchaseSFX();
-                alert("Not enough chips! You need 35,000 to buy this upgrade.");
-            }
-        }
-
         function updatePiggyUI() {
             const level = getPiggyLevel();
             const btn = document.getElementById('buy-piggy-btn');
@@ -345,6 +316,7 @@
                 desc.innerText = `Increase Piggy Bank storage from ${currentStage.maxCapacity.toLocaleString()} to ${nextStage.maxCapacity.toLocaleString()} chips.`;
             }
         }
+
         function buyPiggyUpgrade() {
             const level = getPiggyLevel();
             if (level >= 3) return;
@@ -366,12 +338,12 @@
             setupBGM();
             updateBalanceDisplay();
             updatePiggyUI();
-            updateCooldownUI();
         });
         window.addEventListener('storage', function (e) {
             if (e.key === STORAGE_KEY) updateBalanceDisplay();
         });
     </script>
+    <script src="scripts/gamepad.js"></script>
     <script src="scripts/piggy-bank.js"></script>
 </body>
 </html>
