@@ -1,0 +1,638 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>King's Casino - Riverhall Homes</title>
+    <meta name="theme-color" content="#111">
+    <link rel="manifest" href="manifest.json">
+    <link rel="icon" type="image/png" href="../../resources/icon.png">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&display=swap');
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Fredoka', sans-serif;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+        html, body {
+            height: 100%;
+            width: 100%;
+            overflow: hidden;
+            background: radial-gradient(circle at 50% 30%, #1a1a24 0%, #0d0d12 80%);
+            color: #fff;
+            display: flex;
+            flex-direction: column;
+        }
+        .hud-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            width: 100%;
+            z-index: 10;
+            background: rgba(0,0,0,0.4);
+        }
+        .back-btn {
+            color: #fff;
+            text-decoration: none;
+            font-weight: bold;
+            background: rgba(0,0,0,0.6);
+            padding: 10px 15px;
+            border-radius: 12px;
+            border: 2px solid #f1c40f;
+            font-size: 1rem;
+            transition: transform 0.1s;
+            box-shadow: 0 4px 0 #b38f00;
+        }
+        .back-btn:active {
+            transform: translateY(4px);
+            box-shadow: 0 0 0 #b38f00;
+        }
+        .currency-bar-container {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+        }
+        .currency-display {
+            position: relative;
+            display: flex;
+            align-items: center;
+            background: #111;
+            border-radius: 30px;
+            padding: 5px 15px 5px 35px;
+            border: 2px solid #a4a7ec;
+            box-shadow: 0 0 12px rgba(16,14,32,0.24), 0 0 10px rgba(241,196,15,0.11);
+            margin-right: 0;
+            min-width: 85px;
+        }
+        .coin-icon {
+            position: absolute;
+            left: -10px;
+            width: 40px;
+            height: 40px;
+            background: #111;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border: 2px solid #fff;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.7);
+            overflow: hidden;
+        }
+        .coin-icon img {
+            width: 28px;
+            height: 28px;
+            display: block;
+        }
+        .balance-text {
+            color: #fff;
+            font-size: 1.2rem;
+            font-weight: 700;
+            text-shadow: 0 1px 4px #27282c;
+        }
+        .currency-crown-display {
+            position: relative;
+            display: flex;
+            align-items: center;
+            background: #111;
+            border-radius: 30px;
+            padding: 5px 15px 5px 35px;
+            border: 2px solid #a4a7ec;
+            box-shadow: 0 0 14px rgba(44,40,64,0.15), 0 0 10px rgba(136,154,255,0.10);
+            min-width: 85px;
+        }
+        .crown-icon {
+            position: absolute;
+            left: -10px;
+            width: 40px;
+            height: 40px;
+            background: radial-gradient(circle, #181821 60%, #040406 100%);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border: 2px solid #fff;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.42);
+            overflow: hidden;
+        }
+        .crown-icon img {
+            width: 28px;
+            height: 28px;
+            display: block;
+        }
+        .crown-balance-text {
+            color: #ffffff;
+            font-size: 1.2rem;
+            font-weight: 700;
+            text-shadow: 0 0 4px #fff7b2, 0 2px 0 #624d00;
+        }
+        .canvas-container {
+            flex: 1;
+            position: relative;
+            width: 100%;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        #home-canvas {
+            background-color: #e0e0e0;
+            background-image:
+                linear-gradient(rgba(255, 255, 255, 0.5) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.5) 1px, transparent 1px);
+            background-size: 40px 40px;
+            border: 4px solid #00000000;
+            border-radius: 8px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+            touch-action: none;
+        }
+        .controls-overlay {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: none;
+            gap: 15px;
+            z-index: 20;
+        }
+        .action-btn {
+            background: #e74c3c;
+            border: 2px solid #c0392b;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 10px;
+            font-weight: bold;
+            font-size: 1.1rem;
+            cursor: pointer;
+            box-shadow: 0 4px 0 #922b21;
+        }
+        .action-btn:active {
+            transform: translateY(4px);
+            box-shadow: 0 0 0 #922b21;
+        }
+        .rotate-btn {
+            background: #2980d9;
+            border: 2px solid #1864ab;
+            color: #fff;
+            padding: 10px 20px;
+            border-radius: 10px;
+            font-weight: bold;
+            font-size: 1.1rem;
+            cursor: pointer;
+            box-shadow: 0 4px 0 #154360;
+            transition: background 0.2s;
+        }
+        .rotate-btn:active {
+            transform: translateY(4px);
+            box-shadow: 0 0 0 #154360;
+        }
+        .open-chest-btn {
+            background: linear-gradient(180deg, #2a2218 0%, #151210 100%);
+            border: 2px solid #5c4a1f;
+            color: #f1c40f;
+            padding: 10px 22px;
+            border-radius: 10px;
+            font-weight: bold;
+            font-size: 1.1rem;
+            cursor: pointer;
+            box-shadow: 0 4px 0 #2a1f0a, inset 0 1px 0 rgba(255,255,255,0.06);
+            display: none;
+        }
+        .open-chest-btn:active {
+            transform: translateY(4px);
+            box-shadow: 0 0 0 #2a1f0a;
+        }
+        .controls-overlay.show-chest-btn #open-chest-btn {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="hud-top">
+        <a href="../../index.html" class="back-btn">⬅ Menu</a>
+        <div class="currency-bar-container">
+            <div class="currency-display">
+                <div class="coin-icon"><img src="resources/items/chip.png" alt="Chip"></div>
+                <span class="balance-text" id="balance-display">0</span>
+            </div>
+            <div class="currency-crown-display">
+                <div class="crown-icon">
+                    <img src="resources/ui/crown.png" alt="Crown" onerror="this.onerror=null;this.src='https://cdn.pixabay.com/photo/2017/01/31/15/12/crown-2027480_1280.png';">
+                </div>
+                <span class="crown-balance-text" id="crown-balance-display">0</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="canvas-container" id="canvas-container">
+        <canvas id="home-canvas"></canvas>
+        <div class="controls-overlay" id="controls-overlay">
+            <button class="rotate-btn" id="rotate-btn">Rotate</button>
+            <button class="open-chest-btn" id="open-chest-btn">Open Chest</button>
+            <button class="action-btn" id="remove-btn">Remove</button>
+        </div>
+        <div class="chest-prompt-overlay" id="chest-prompt-overlay" style="display:none">
+            <button class="open-chest-btn" id="chest-prompt-btn">Open Chest</button>
+        </div>
+    </div>
+
+    <div id="shop-injection-point"></div>
+
+    <script>
+        const STORAGE_KEY = 'kings-casino-chips';
+        function getBalance() {
+            let bal = parseInt(localStorage.getItem(STORAGE_KEY), 10);
+            return isNaN(bal) ? 100 : bal;
+        }
+        function setBalance(amount) {
+            localStorage.setItem(STORAGE_KEY, Math.max(0, Math.floor(amount)));
+        }
+
+        const CROWN_STORAGE_KEY = 'kings-casino-crowns';
+        function getCrownBalance() {
+            let c = parseInt(localStorage.getItem(CROWN_STORAGE_KEY), 10);
+            return isNaN(c) ? 0 : c;
+        }
+        function setCrownBalance(amount) {
+            localStorage.setItem(CROWN_STORAGE_KEY, Math.max(0, Math.floor(amount)));
+        }
+        function syncBalance() {
+            document.getElementById('balance-display').innerText = getBalance().toLocaleString();
+            document.getElementById('crown-balance-display').innerText = getCrownBalance().toLocaleString();
+        }
+        window.getBalance = getBalance;
+        window.setBalance = setBalance;
+        window.syncBalance = syncBalance;
+        window.getCrownBalance = getCrownBalance;
+        window.setCrownBalance = setCrownBalance;
+        window.syncCrownBalance = syncBalance;
+
+        syncBalance();
+
+        window.addEventListener('storage', (e) => {
+            if (e.key === STORAGE_KEY || e.key === CROWN_STORAGE_KEY) {
+                syncBalance();
+            }
+        });
+
+        const canvas = document.getElementById('home-canvas');
+        const ctx = canvas.getContext('2d');
+        const container = document.getElementById('canvas-container');
+        const controlsOverlay = document.getElementById('controls-overlay');
+        const removeBtn = document.getElementById('remove-btn');
+        const rotateBtn = document.getElementById('rotate-btn');
+        const openChestBtn = document.getElementById('open-chest-btn');
+        const chestPromptOverlay = document.getElementById('chest-prompt-overlay');
+        const chestPromptBtn = document.getElementById('chest-prompt-btn');
+
+        const CHEST_NAMES = ['Wooden Chest', 'Luxury Safe'];
+        function isChestItem(item) {
+            if (typeof window.isChestFurniture === 'function') return window.isChestFurniture(item);
+            return !!(item && (item.ischest || item.chestId || CHEST_NAMES.includes(item.name)));
+        }
+
+        function updateChestUI() {
+            const show = selectedItem && isChestItem(selectedItem) && !isDragging;
+            if (show) {
+                controlsOverlay.classList.add('show-chest-btn');
+            } else {
+                controlsOverlay.classList.remove('show-chest-btn');
+            }
+            chestPromptOverlay.classList.toggle('visible', !!show);
+        }
+
+        function openSelectedChest() {
+            if (!selectedItem || !isChestItem(selectedItem)) return;
+            const chestId = typeof window.ensureChestId === 'function'
+                ? window.ensureChestId(selectedItem)
+                : selectedItem.chestId;
+            if (typeof window.openChestMenu === 'function') {
+                window.openChestMenu(chestId, selectedItem.name);
+            }
+        }
+
+        openChestBtn.addEventListener('click', openSelectedChest);
+        chestPromptBtn.addEventListener('click', openSelectedChest);
+
+        const GRID_SIZE = 40;
+        let furnitureItems = [];
+        let selectedItem = null;
+        let isDragging = false;
+        let dragOffsetX = 0;
+        let dragOffsetY = 0;
+
+        const furnitureImages = {};
+
+        function getFurnitureImage(src, cb) {
+            if (furnitureImages[src]) {
+                cb(furnitureImages[src]);
+            } else {
+                const img = new Image();
+                img.onload = () => {
+                    furnitureImages[src] = img;
+                    cb(img);
+                };
+                img.src = src;
+            }
+        }
+
+        function resizeCanvas() {
+            let padding = 40;
+            let w = container.clientWidth - padding;
+            let h = container.clientHeight - padding;
+            canvas.width = Math.floor(w / GRID_SIZE) * GRID_SIZE;
+            canvas.height = Math.floor(h / GRID_SIZE) * GRID_SIZE;
+            draw();
+        }
+        window.addEventListener('resize', resizeCanvas);
+
+        function draw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            let toDraw = furnitureItems.length;
+            if (toDraw === 0) return;
+
+            furnitureItems.forEach(item => {
+                if (!item.img) {
+                    ctx.save();
+                    if (item.rotate && item.rotate !== 0) {
+                        ctx.translate(item.x + item.width / 2, item.y + item.height / 2);
+                        ctx.rotate(item.rotate * Math.PI / 180);
+                        ctx.fillStyle = "#888";
+                        ctx.fillRect(-item.width / 2, -item.height / 2, item.width, item.height);
+                        if (item === selectedItem) {
+                            ctx.fillStyle = "#fff";
+                            ctx.font = "13px Fredoka";
+                            ctx.textAlign = "center";
+                            ctx.save();
+                            ctx.strokeStyle = "rgba(0,0,0,0.5)";
+                            ctx.lineWidth = 2;
+                            ctx.strokeText(item.name, 0, 5);
+                            ctx.fillText(item.name, 0, 5);
+                            ctx.restore();
+                        }
+                    } else {
+                        ctx.fillStyle = "#888";
+                        ctx.fillRect(item.x, item.y, item.width, item.height);
+                        if (item === selectedItem) {
+                            ctx.fillStyle = "#fff";
+                            ctx.font = "13px Fredoka";
+                            ctx.textAlign = "center";
+                            ctx.save();
+                            ctx.strokeStyle = "rgba(0,0,0,0.5)";
+                            ctx.lineWidth = 2;
+                            ctx.strokeText(item.name, item.x + item.width / 2, item.y + item.height / 2 + 5);
+                            ctx.fillText(item.name, item.x + item.width / 2, item.y + item.height / 2 + 5);
+                            ctx.restore();
+                        }
+                    }
+                    ctx.restore();
+                } else {
+                    getFurnitureImage(item.img, (img) => {
+                        ctx.save();
+                        if (item.rotate && item.rotate !== 0) {
+                            ctx.translate(item.x + item.width / 2, item.y + item.height / 2);
+                            ctx.rotate(item.rotate * Math.PI / 180);
+                            ctx.drawImage(
+                                img,
+                                -item.width / 2,
+                                -item.height / 2,
+                                item.width,
+                                item.height
+                            );
+                            if (item === selectedItem) {
+                                ctx.save();
+                                ctx.strokeStyle = '#f1c40f';
+                                ctx.lineWidth = 3;
+                                ctx.strokeRect(-item.width / 2 - 2, -item.height / 2 - 2, item.width + 4, item.height + 4);
+                                ctx.restore();
+                            }
+                            if (item === selectedItem) {
+                                ctx.save();
+                                ctx.fillStyle = "#fff";
+                                ctx.font = "14px Fredoka";
+                                ctx.textAlign = "center";
+                                ctx.strokeStyle = "rgba(0,0,0,0.5)";
+                                ctx.lineWidth = 2;
+                                ctx.strokeText(item.name, 0, item.height / 2 - 5);
+                                ctx.fillText(item.name, 0, item.height / 2 - 5);
+                                ctx.restore();
+                            }
+                        } else {
+                            ctx.drawImage(
+                                img,
+                                item.x,
+                                item.y,
+                                item.width,
+                                item.height
+                            );
+                            if (item === selectedItem) {
+                                ctx.save();
+                                ctx.strokeStyle = '#f1c40f';
+                                ctx.lineWidth = 3;
+                                ctx.strokeRect(item.x - 2, item.y - 2, item.width + 4, item.height + 4);
+                                ctx.restore();
+                            }
+                            if (item === selectedItem) {
+                                ctx.save();
+                                ctx.fillStyle = "#fff";
+                                ctx.font = "14px Fredoka";
+                                ctx.textAlign = "center";
+                                ctx.strokeStyle = "rgba(0,0,0,0.5)";
+                                ctx.lineWidth = 2;
+                                ctx.strokeText(item.name, item.x + item.width / 2, item.y + item.height - 5);
+                                ctx.fillText(item.name, item.x + item.width / 2, item.y + item.height - 5);
+                                ctx.restore();
+                            }
+                        }
+                        ctx.restore();
+                    });
+                }
+            });
+        }
+
+        window.placeFurniture = function (name, wBlocks, hBlocks, imgSrc, meta) {
+            const item = {
+                id: Date.now(),
+                name: name,
+                x: (canvas.width / 2) - ((wBlocks * GRID_SIZE) / 2),
+                y: (canvas.height / 2) - ((hBlocks * GRID_SIZE) / 2),
+                width: wBlocks * GRID_SIZE,
+                height: hBlocks * GRID_SIZE,
+                img: imgSrc,
+                rotate: 0
+            };
+            if (meta && meta.chestId) {
+                item.chestId = meta.chestId;
+                item.ischest = true;
+            } else if (CHEST_NAMES.includes(name)) {
+                item.chestId = 'chest-' + Math.random().toString(36).substr(2, 9) + '-' + Date.now();
+                item.ischest = true;
+            }
+            furnitureItems.push(item);
+            draw();
+        };
+
+        function getPointerPos(e) {
+            const rect = canvas.getBoundingClientRect();
+            const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+            const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+            return {
+                x: clientX - rect.left,
+                y: clientY - rect.top
+            };
+        }
+
+        function handleDown(e) {
+            const pos = getPointerPos(e);
+            selectedItem = null;
+            controlsOverlay.style.display = 'none';
+            chestPromptOverlay.classList.remove('visible');
+
+            for (let i = furnitureItems.length - 1; i >= 0; i--) {
+                const item = furnitureItems[i];
+                let hit = false;
+                if (item.rotate && item.rotate !== 0) {
+                    const centerX = item.x + item.width / 2;
+                    const centerY = item.y + item.height / 2;
+                    const angle = -item.rotate * Math.PI / 180;
+                    const localX = Math.cos(angle) * (pos.x - centerX) - Math.sin(angle) * (pos.y - centerY) + item.width / 2;
+                    const localY = Math.sin(angle) * (pos.x - centerX) + Math.cos(angle) * (pos.y - centerY) + item.height / 2;
+                    if (localX >= 0 && localX <= item.width && localY >= 0 && localY <= item.height) {
+                        hit = true;
+                    }
+                } else {
+                    if (
+                        pos.x >= item.x &&
+                        pos.x <= item.x + item.width &&
+                        pos.y >= item.y &&
+                        pos.y <= item.y + item.height
+                    ) {
+                        hit = true;
+                    }
+                }
+                if (hit) {
+                    selectedItem = item;
+                    isDragging = true;
+                    if (item.rotate && item.rotate !== 0) {
+                        const centerX = item.x + item.width / 2;
+                        const centerY = item.y + item.height / 2;
+                        const angle = -item.rotate * Math.PI / 180;
+                        const localX = Math.cos(angle) * (pos.x - centerX) - Math.sin(angle) * (pos.y - centerY) + item.width / 2;
+                        const localY = Math.sin(angle) * (pos.x - centerX) + Math.cos(angle) * (pos.y - centerY) + item.height / 2;
+                        dragOffsetX = localX;
+                        dragOffsetY = localY;
+                    } else {
+                        dragOffsetX = pos.x - item.x;
+                        dragOffsetY = pos.y - item.y;
+                    }
+                    furnitureItems.splice(i, 1);
+                    furnitureItems.push(item);
+                    controlsOverlay.style.display = 'flex';
+                    updateChestUI();
+                    break;
+                }
+            }
+            draw();
+        }
+
+        function handleMove(e) {
+            if (!isDragging || !selectedItem) return;
+            e.preventDefault();
+            chestPromptOverlay.classList.remove('visible');
+            const pos = getPointerPos(e);
+
+            if (selectedItem.rotate && selectedItem.rotate !== 0) {
+                const centerX = pos.x;
+                const centerY = pos.y;
+                const angle = selectedItem.rotate * Math.PI / 180;
+                const dx = dragOffsetX - selectedItem.width / 2;
+                const dy = dragOffsetY - selectedItem.height / 2;
+                const rotatedDx = Math.cos(angle) * dx - Math.sin(angle) * dy;
+                const rotatedDy = Math.sin(angle) * dx + Math.cos(angle) * dy;
+                selectedItem.x = centerX - rotatedDx - selectedItem.width / 2;
+                selectedItem.y = centerY - rotatedDy - selectedItem.height / 2;
+            } else {
+                selectedItem.x = pos.x - dragOffsetX;
+                selectedItem.y = pos.y - dragOffsetY;
+            }
+            draw();
+        }
+
+        function handleUp() {
+            if (isDragging && selectedItem) {
+                let isRotatedOdd = selectedItem.rotate && selectedItem.rotate % 180 !== 0;
+                let screenW = isRotatedOdd ? selectedItem.height : selectedItem.width;
+                let screenH = isRotatedOdd ? selectedItem.width : selectedItem.height;
+                let centerX = selectedItem.x + selectedItem.width / 2;
+                let centerY = selectedItem.y + selectedItem.height / 2;
+                let screenX = centerX - screenW / 2;
+                let screenY = centerY - screenH / 2;
+                screenX = Math.round(screenX / GRID_SIZE) * GRID_SIZE;
+                screenY = Math.round(screenY / GRID_SIZE) * GRID_SIZE;
+                if (screenX < 0) screenX = 0;
+                if (screenY < 0) screenY = 0;
+                if (screenX + screenW > canvas.width) screenX = canvas.width - screenW;
+                if (screenY + screenH > canvas.height) screenY = canvas.height - screenH;
+                let newCenterX = screenX + screenW / 2;
+                let newCenterY = screenY + screenH / 2;
+                selectedItem.x = newCenterX - selectedItem.width / 2;
+                selectedItem.y = newCenterY - selectedItem.height / 2;
+            }
+            isDragging = false;
+            updateChestUI();
+            draw();
+        }
+
+        canvas.addEventListener('mousedown', handleDown);
+        canvas.addEventListener('mousemove', handleMove);
+        window.addEventListener('mouseup', handleUp);
+
+        canvas.addEventListener('touchstart', handleDown, { passive: false });
+        canvas.addEventListener('touchmove', handleMove, { passive: false });
+        window.addEventListener('touchend', handleUp);
+
+        removeBtn.addEventListener('click', () => {
+            if (selectedItem) {
+                furnitureItems = furnitureItems.filter(i => i.id !== selectedItem.id);
+                selectedItem = null;
+                controlsOverlay.style.display = 'none';
+                chestPromptOverlay.classList.remove('visible');
+                controlsOverlay.classList.remove('show-chest-btn');
+                draw();
+            }
+        });
+
+        rotateBtn.addEventListener('click', () => {
+            if (selectedItem) {
+                selectedItem.rotate = ((selectedItem.rotate || 0) + 90) % 360;
+                draw();
+            }
+        });
+
+        resizeCanvas();
+
+        fetch('scripts/furniture-shop.js')
+            .then(response => response.text())
+            .then(html => {
+                document.getElementById('shop-injection-point').innerHTML = html;
+                const scripts = document.getElementById('shop-injection-point').getElementsByTagName('script');
+                for (let i = 0; i < scripts.length; i++) {
+                    eval(scripts[i].innerText);
+                }
+            })
+            .catch(err => console.log('Run this on a local server to load the shop fetch(), or embed it directly.', err));
+    </script>
+
+    <script src="scenes/tutorial.js"></script>
+    <script src="../../scripts/gamepad.js"></script>
+    <script src="scripts/chest-bank.js"></script>
+    <script src="scripts/home-shop.js"></script>
+    <script src="../../scripts/first-click.js"></script>
+    <script src="../../scripts/piggy-bank.js"></script>
+    <script src="sfx/riverhall-sfx.js"></script>
+</body>
+</html>
