@@ -7,7 +7,9 @@
 
     const INCREMENT_MS = 60 * 1000;
 
-    const COOLDOWN_MS = 12 * 60 * 60 * 1000;
+    const DEFAULT_COOLDOWN_MS = 24 * 60 * 60 * 1000;
+    const REDUCED_COOLDOWN_MS = 3 * 60 * 60 * 1000;
+    const COOLDOWN_UPGRADE_KEY = "kings-casino-piggy-cooldown-upgrade";
 
     const CLICK_SFX = new Audio('sfx/piggybank-open.mp3');
     const COLLECT_SFX = new Audio('sfx/piggy-bank.mp3');
@@ -52,12 +54,21 @@
         return increments * CROWN_INCREMENT;
     }
 
+    function hasReducedCooldownUpgrade() {
+        return localStorage.getItem(COOLDOWN_UPGRADE_KEY) === "1";
+    }
+
+    function getCooldownDurationMs() {
+        return hasReducedCooldownUpgrade() ? REDUCED_COOLDOWN_MS : DEFAULT_COOLDOWN_MS;
+    }
+
     function getCooldownRemainingMs() {
         const lastClaim = parseInt(localStorage.getItem(PIGGY_LAST_CLAIM) || "0", 10);
         const now = Date.now();
         const cooldownPassed = now - lastClaim;
-        if (!lastClaim || cooldownPassed >= COOLDOWN_MS) return 0;
-        return COOLDOWN_MS - cooldownPassed;
+        const cooldownMs = getCooldownDurationMs();
+        if (!lastClaim || cooldownPassed >= cooldownMs) return 0;
+        return cooldownMs - cooldownPassed;
     }
 
     function formatTime(ms) {
