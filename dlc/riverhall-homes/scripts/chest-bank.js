@@ -253,7 +253,7 @@
                 <div class="chest-menu-header">
                     <div class="chest-menu-icon">🗃️</div>
                     <h1 id="chest-menu-title">${chestName || 'Storage Chest'}</h1>
-                    <p class="chest-menu-subtitle">Secure chip storage — each chest keeps its own balance</p>
+                    <p class="chest-menu-subtitle">CHIP STORAGE</p>
                 </div>
 
                 <div class="chest-balance-cards">
