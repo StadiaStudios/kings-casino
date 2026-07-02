@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>King's Casino - Fortune Wheel</title>
+    <title>King's Casino - Bud Clicker</title>
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#110517">
     <meta name="mobile-web-app-capable" content="yes">
@@ -13,495 +13,411 @@
     <link rel="icon" type="image/png" href="resources/icon.png">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&display=swap');
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Fredoka', sans-serif; user-select: none; }
-        body { background: radial-gradient(circle at 50% 30%, #3d142b 0%, #110517 80%); color: #fff; display: flex; flex-direction: column; align-items: center; height: 100vh; overflow: hidden; }
 
-        .menu-btn {
-            position: fixed;
-            bottom: 24px;
-            left: 50%;
-            transform: translateX(-50%);
-            z-index: 100;
-            background: rgba(44, 30, 65, 0.93);
-            border: 2px solid #f1c40f;
-            border-radius: 14px;
-            box-shadow: 0 2px 8px #0007;
-            padding: 7px 24px 7px 44px;
-            color: #fffbe9;
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Fredoka', sans-serif;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+        html, body {
+            height: 100%;
+            width: 100%;
+            overflow: hidden;
+            background-color: #110517;
+        }
+        .game-viewport {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            background: radial-gradient(circle at 50% 30%, #233d14 0%, #061705 80%);
+            z-index: 1;
+        }
+        .hud-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            width: 100%;
+            z-index: 10;
+        }
+        .back-btn {
+            color: #fff;
+            text-decoration: none;
             font-weight: bold;
-            font-size: 1.15rem;
-            cursor: pointer;
-            transition: background 0.12s;
+            background: rgba(0,0,0,0.6);
+            padding: 10px 15px;
+            border-radius: 12px;
+            border: 2px solid #2ecc71;
+            font-size: 1rem;
+            transition: transform 0.1s;
+            box-shadow: 0 4px 0 #1e7e43;
+        }
+        .back-btn:active {
+            transform: translateY(4px);
+            box-shadow: 0 0 0 #1e7e43;
+        }
+        .currency-container {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            align-items: flex-end;
+        }
+        .currency-display {
+            position: relative;
             display: flex;
             align-items: center;
+            background: rgba(0,0,0,0.6);
+            border-radius: 30px;
+            padding: 5px 15px 5px 35px;
+            min-width: 140px;
+            justify-content: flex-end;
         }
-        .menu-btn:hover {
-            background: #f6e58d;
-            color: #613b00;
+        .chips-border {
+            border: 2px solid #f1c40f;
+            box-shadow: 0 0 10px rgba(241,196,15,0.3);
         }
-        .menu-btn .menu-icon {
+        .buds-border {
+            border: 2px solid #2ecc71;
+            box-shadow: 0 0 10px rgba(46,204,113,0.3);
+        }
+        .cps-border {
+            border: 2px solid #3498db;
+            box-shadow: 0 0 10px rgba(52,152,219,0.3);
+        }
+        .icon-badge {
             position: absolute;
-            left: 14px;
-            top: 9px;
-            width: 22px;
-            height: 22px;
+            left: -10px;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
             display: flex;
+            justify-content: center;
             align-items: center;
+            border: 2px solid #fff;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.5);
+        }
+        .chip-bg { background: radial-gradient(circle,#f1c40f,#f39c12); }
+        .bud-bg { background: radial-gradient(circle,#2ecc71,#27ae60); }
+        .cps-bg { background: radial-gradient(circle,#3498db,#2980b9); }
+
+        .balance-text {
+            color: #fff;
+            font-size: 1.2rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+        }
+        .clicker-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding-bottom: 40px;
+            z-index: 5;
+        }
+        .clicker-wrapper {
+            position: relative;
+            width: 440px;
+            height: 440px;
+            margin-bottom: 50px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .clicker-target {
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+            transition: transform 0.05s ease-out;
+            filter: drop-shadow(0 10px 20px rgba(0,0,0,0.6));
+            z-index: 5;
+        }
+        .clicker-target:active {
+            transform: scale(0.92);
+        }
+        .clicker-target img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            pointer-events: none;
+        }
+        .action-button-group {
+            display: flex;
+            flex-direction: row;
+            gap: 15px;
+            max-width: 90%;
             justify-content: center;
         }
-   
-        .hud-top { display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; width: 100%; max-width: 450px; }
-        .currency-display { display: flex; align-items: center; background: rgba(0,0,0,0.6); border-radius: 30px; padding: 6px 15px 6px 40px; border: 2px solid #f1c40f; position: relative; min-width: 120px; }
-        .coin-icon { position: absolute; left: -5px; width: 38px; height: 38px; background: radial-gradient(circle,#f1c40f,#f39c12); border-radius: 50%; display: flex; justify-content: center; align-items: center; border: 2px solid #fff; box-shadow: 0 2px 5px rgba(0,0,0,0.3); }
-
-        .wheel-container { position: relative; margin: 15px 0; width: 290px; height: 290px; }
-        #wheel { 
-            width: 100%; height: 100%; border-radius: 50%; border: 10px solid #f1c40f; 
-            box-shadow: 0 0 20px rgba(241, 196, 15, 0.4), inset 0 0 15px rgba(0,0,0,0.5);
-            transition: transform 7s cubic-bezier(0.17, 0.67, 0.12, 0.99); 
-            background: conic-gradient(#e74c3c 0deg 90deg, #3498db 90deg 180deg, #2ecc71 180deg 270deg, #f1c40f 270deg 360deg);
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .wheel-segment { 
-            position: absolute; 
-            top: 0; left: 0; 
-            width: 100%; height: 100%; 
-            display: flex; 
-            justify-content: center; 
-            align-items: flex-start; 
-            padding-top: 25px;
-        }
-        .seg-0 { transform: rotate(45deg); }
-        .seg-1 { transform: rotate(135deg); }
-        .seg-2 { transform: rotate(225deg); }
-        .seg-3 { transform: rotate(315deg); }
-        .wheel-segment img { width: 42px; height: 42px; pointer-events: none; filter: drop-shadow(0 2px 3px rgba(0,0,0,0.4)); }
-        
-        .arrow { position: absolute; top: -12px; left: 50%; transform: translateX(-50%); width: 0; height: 0; border-left: 16px solid transparent; border-right: 16px solid transparent; border-top: 26px solid #fff; z-index: 10; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5)); }
-        .center-pin { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 30px; height: 30px; background: #fff; border-radius: 50%; z-index: 5; border: 4px solid #d35400; box-shadow: 0 2px 5px rgba(0,0,0,0.5); }
-
-        .controls { background: rgba(24, 11, 31, 0.85); padding: 18px; border-radius: 24px; width: 92%; max-width: 400px; text-align: center; border: 2px solid #5a3654; box-shadow: 0 8px 24px rgba(0,0,0,0.6); }
-        
-        .spin-btn { width: 100%; padding: 14px; font-size: 1.3rem; background: linear-gradient(to bottom, #f1c40f, #d35400); border: none; border-radius: 16px; color: #fff; font-weight: bold; cursor: pointer; border-bottom: 4px solid #a04000; text-shadow: 0 2px 2px rgba(0,0,0,0.4); box-shadow: 0 4px 10px rgba(211, 84, 0, 0.3); transition: transform 0.1s; }
-        .spin-btn:active { transform: scale(0.98); border-bottom-width: 1px; margin-top: 3px; }
-
-        .spin-btn.free-spin {
-            background: linear-gradient(to bottom, #6adc20, #129e44);
-            color: #fff8e4;
-            border-bottom: 4px solid #205f31;
-            animation: free-glow 1.5s infinite alternate;
-        }
-        @keyframes free-glow {
-            0%   { box-shadow: 0 0 16px 4px #26d31a70, 0 4px 10px rgba(211, 84, 0, 0.1);}
-            100% { box-shadow: 0 0 32px 10px #aaff9ddd, 0 4px 10px rgba(211, 84, 0, 0.1);}
-        }
-
-        .exchange-container { background: rgba(0, 0, 0, 0.4); border: 2px solid #3d1d42; border-radius: 18px; margin-top: 15px; padding: 12px; }
-        .exchange-title { font-size: 0.85rem; color: #a58cb3; text-transform: uppercase; letter-spacing: 1px; font-weight: 700; margin-bottom: 10px; }
-        
-        .exchange-row { display: flex; align-items: center; justify-content: space-between; background: rgba(25, 10, 33, 0.6); border-radius: 14px; padding: 10px; border: 1px solid rgba(255,255,255,0.05); }
-        .exchange-card { flex: 1; background: rgba(255,255,255,0.03); border-radius: 10px; padding: 8px; display: flex; flex-direction: column; align-items: center; justify-content: center; border: 1px solid rgba(255,255,255,0.05); }
-        .exchange-card img { width: 32px; height: 32px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.4)); margin-bottom: 4px; }
-        .exchange-value { font-size: 1.1rem; font-weight: 700; color: #fff; }
-        .exchange-value.chips-cost { color: #f1c40f; }
-        .exchange-value.tickets-gain { color: #3498db; }
-        
-        .exchange-flow-arrow { display: flex; align-items: center; justify-content: center; padding: 0 10px; }
-        .arrow-bubble { background: #27ae60; border-radius: 50%; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 8px rgba(39, 174, 96, 0.4); border: 2px solid #52de8d; }
-        .arrow-bubble svg { width: 16px; height: 16px; fill: #fff; }
-
-        .exchange-action-btn {
-            width: 100%;
-            margin-top: 10px;
-            padding: 12px;
-            background: linear-gradient(180deg, #f7e26b 0%, #f7b42c 60%, #e6a103 100%);
-            border: none;
-            border-radius: 14px;
-            color: #613b00;
-            font-weight: bold;
+        .btn-shop-trigger {
+            background: linear-gradient(to bottom, #f1c40f, #d35400);
+            border: 3px solid #f9e79f;
+            border-radius: 18px;
+            color: white;
+            padding: 12px 20px;
             font-size: 1.1rem;
+            font-weight: 700;
             cursor: pointer;
-            border-bottom: 4px solid #d39818;
-            text-shadow: 0 1px 3px rgba(255,255,255,0.4), 0 1px 2px rgba(99,59,0,0.2);
-            box-shadow: 0 2px 10px rgba(231, 160, 3, 0.18), inset 0 0 8px rgba(255,255,200,0.2);
-            transition: box-shadow 0.15s, transform 0.1s, border-bottom-width 0.1s;
+            box-shadow: 0 6px 0 #935116, 0 10px 15px rgba(0,0,0,0.4);
+            text-shadow: 0 2px 4px rgba(0,0,0,0.6);
+            transition: transform 0.1s, box-shadow 0.1s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            white-space: nowrap;
         }
-        .exchange-action-btn:active {
-            transform: scale(0.99);
-            border-bottom-width: 1px;
-            margin-top: 13px;
-            box-shadow: 0 1px 3px rgba(230,161,3,0.05), inset 0 1px 4px rgba(255,255,200,0.15);
+        .btn-shop-trigger:active {
+            transform: translateY(6px);
+            box-shadow: 0 0 0 #935116, 0 4px 5px rgba(0,0,0,0.4);
         }
-   
-
-        .result-popup { position: fixed; top:0; left:0; right:0; bottom:0; display: flex; align-items: center; justify-content: center; background: rgba(17,5,23,0.85); z-index: 1000; }
-        .popup-content { background: #271b38; border: 4px solid #f1c40f; padding: 30px; border-radius: 20px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.8); }
-        .popup-content h2 { margin-bottom: 10px; font-size: 1.6rem; color: #a58cb3; }
-        .popup-content button { padding: 10px 25px; background: #e74c3c; border: none; border-radius: 10px; color: #fff; font-weight: bold; margin-top: 15px; cursor: pointer; }
-        .free-timer {
-            margin-top: 10px;
-            font-size: 1rem;
-            color: #83fcab;
-            font-weight: bold;
-            letter-spacing: 0.04em;
-            text-shadow: 0 1px 4px #082e18, 0 0 1px #97ffd4;
-            display: block;
+        .btn-upgrades-blue {
+            background: linear-gradient(to bottom, #3498db, #1f3a60) !important;
+            border-color: #aed6f1 !important;
+            box-shadow: 0 6px 0 #1b4f72, 0 10px 15px rgba(0,0,0,0.4) !important;
         }
-
-        .ticket-spin-timer {
-            margin-top: 6px;
-            font-size: 0.96rem;
-            color: #57e9ff;
-            font-weight: 600;
-            letter-spacing: 0.03em;
-            text-shadow: 0 1px 4px #263b44b8, 0 0 1px #5fd9ff99;
-            display: block;
+        .floating-plus {
+            position: absolute;
+            color: #2ecc71;
+            font-size: 2.2rem;
+            font-weight: 700;
+            text-shadow: 0 4px 8px rgba(0,0,0,0.8), 0 0 10px rgba(46,204,113,0.5);
+            pointer-events: none;
+            z-index: 100;
+            animation: floatUpAndOut 0.8s ease-out forwards;
+        }
+        .floating-plus.rain-boost {
+            color: #f1c40f !important;
+            text-shadow: 0 4px 12px rgba(0,0,0,0.9), 0 0 20px #f39c12 !important;
+            font-size: 2.8rem;
+        }
+        @keyframes floatUpAndOut {
+            0% { transform: translate(-50%, -50%) translateY(0) scale(0.8); opacity: 1; }
+            100% { transform: translate(-50%, -50%) translateY(-120px) scale(1.3); opacity: 0; }
+        }
+        @media (min-width: 768px) {
+            .clicker-wrapper { width: 300px; height: 300px; }
         }
     </style>
 </head>
 <body>
-
-    <button class="menu-btn" onclick="window.location.href='index.html'">
-        <span class="menu-icon">
-            <svg width="22" height="22" viewBox="0 0 22 22" style="display:block" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <rect y="3.5" width="22" height="2.7" rx="1" fill="#f1c40f"/>
-                <rect y="9.5" width="22" height="2.7" rx="1" fill="#f1c40f"/>
-                <rect y="15.5" width="22" height="2.7" rx="1" fill="#f1c40f"/>
-            </svg>
-        </span>
-        Menu
-    </button>
-
-    <div class="hud-top">
-        <div class="currency-display">
-            <div class="coin-icon"><img style="width:26px;height:26px;" src="resources/items/chip.png" alt="Chips"></div>
-            <span id="chip-display">0</span>
-        </div>
-        <div class="currency-display" style="border-color: #3498db;">
-            <div class="coin-icon" style="background: #3498db; border-color: #5dade2;"><img style="width:24px;height:24px;" src="resources/items/wheel-spinner/wheel-ticket.png" alt="Tickets"></div>
-            <span id="ticket-display">0</span>
-        </div>
-    </div>
-
-    <div class="wheel-container">
-        <div class="arrow"></div>
-        <div class="center-pin"></div>
-        <div id="wheel">
-            <div class="wheel-segment seg-0"><img src="resources/items/chip.png" alt="Chips"></div>
-            <div class="wheel-segment seg-1"><img src="resources/items/wheel-spinner/tickets-pile.png" alt="Tickets"></div>
-            <div class="wheel-segment seg-2"><img src="resources/items/wheel-spinner/nothing.png" alt="None"></div>
-            <div class="wheel-segment seg-3"><img src="resources/items/100-chip-blue.png" alt="Bonus"></div>
-        </div>
-    </div>
-
-    <div class="controls">
-        <button onclick="spinWheel()" id="spin-btn" class="spin-btn">SPIN (1 Ticket)</button>
-        <span id="free-timer-label" class="free-timer" style="display:none;"></span>
-        <span id="ticket-spin-timer-label" class="ticket-spin-timer" style="display:none;"></span>
-
-        <div class="exchange-container">
-            <div class="exchange-title">Casino Exchange</div>
-            <div class="exchange-row">
-                <div class="exchange-card">
-                    <img src="resources/items/chip.png" alt="Chips Bag">
-                    <div class="exchange-value chips-cost" id="rate-text">5,000</div>
-                </div>
-                
-                <div class="exchange-flow-arrow">
-                    <div class="arrow-bubble">
-                        <svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    <div class="game-viewport">
+        <div class="hud-top">
+            <a href="index.html" class="back-btn">⬅ Menu</a>
+            <div class="currency-container">
+                <div class="currency-display chips-border">
+                    <div class="icon-badge chip-bg">
+                        <img style="width:26px;height:26px;" src="resources/items/chip.png" alt="Chip">
                     </div>
+                    <span class="balance-text" id="clicker-chips">0</span>
                 </div>
-                
-                <div class="exchange-card">
-                    <img src="resources/items/wheel-spinner/wheel-ticket.png" alt="Ticket Multi">
-                    <div class="exchange-value tickets-gain">+1 Ticket</div>
+                <div class="currency-display buds-border">
+                    <div class="icon-badge bud-bg">
+                        <img style="width:26px;height:26px;" src="resources/bud-clicker/bud.png" alt="Bud">
+                    </div>
+                    <span class="balance-text" id="clicker-buds">0</span>
+                </div>
+                <div class="currency-display cps-border">
+                    <div class="icon-badge cps-bg">
+                        <span style="font-size: 1.2rem; color: #fff;">⚡</span>
+                    </div>
+                    <span class="balance-text" id="clicker-cps">0/s</span>
                 </div>
             </div>
-            <button onclick="exchangeChips()" class="exchange-action-btn">Convert Resources</button>
+        </div>
+        <div class="clicker-container">
+            <div class="clicker-wrapper" id="clicker-wrapper-anchor">
+                <div class="clicker-target" id="bud-click-target">
+                    <img src="resources/bud-clicker/bud.png" alt="Bud">
+                </div>
+            </div>
+            <div class="action-button-group">
+                <button class="btn-shop-trigger" id="shop-open-btn">🏪 EXCHANGE BUDS</button>
+                <button class="btn-shop-trigger btn-upgrades-blue" id="upgrades-open-btn">🛠️ UPGRADE</button>
+            </div>
         </div>
     </div>
-
-    <div id="popup" class="result-popup" style="display:none;">
-        <div class="popup-content" id="popup-content"></div>
+    <div class="fullscreen-shop" id="casino-shop-overlay">
+        <div class="shop-header">
+            <h2 class="shop-title">EXCHANGE BUDS</h2>
+            <button class="shop-close-btn" id="shop-close-btn">✕</button>
+        </div>
+        <div class="shop-content">
+            <div class="shop-card" data-cost="1000" data-base="350" data-bonus="0" data-type="standard">
+                <div class="shop-card-badge">Starter Value</div>
+                <div class="exchange-rate">
+                    <div class="exchange-unit"><img src="resources/bud-clicker/bud.png"><span>1,000 Buds</span></div>
+                    <div class="exchange-arrow">➔</div>
+                    <div class="exchange-unit"><img src="resources/items/chip.png"><span>350 Chips</span></div>
+                </div>
+                <button class="btn-cashout disabled">Cash Out Tier 1</button>
+            </div>
+            <div class="shop-card" data-cost="2000" data-base="650" data-bonus="200" data-type="bonus">
+                <div class="shop-card-badge gold-badge">Runner Deal (+200 Bonus!)</div>
+                <div class="exchange-rate">
+                    <div class="exchange-unit"><img src="resources/bud-clicker/bud.png"><span>2,000 Buds</span></div>
+                    <div class="exchange-arrow">➔</div>
+                    <div class="exchange-unit"><img src="resources/items/chip.png"><span>850 Chips</span></div>
+                </div>
+                <button class="btn-cashout disabled">Cash Out Tier 2</button>
+            </div>
+            <div class="shop-card" data-cost="3000" data-base="1050" data-bonus="600" data-type="bonus">
+                <div class="shop-card-badge purple-badge">Bulk Stash (+600 Bonus!)</div>
+                <div class="exchange-rate">
+                    <div class="exchange-unit"><img src="resources/bud-clicker/bud.png"><span>3,000 Buds</span></div>
+                    <div class="exchange-arrow">➔</div>
+                    <div class="exchange-unit"><img src="resources/items/chip.png"><span>1,650 Chips</span></div>
+                </div>
+                <button class="btn-cashout disabled">Cash Out Tier 3</button>
+            </div>
+            <div class="shop-card" data-cost="5000" data-base="1750" data-type="random">
+                <div class="shop-card-badge rainbow-badge">High Roller (1x - 20x Mystery Bonus!)</div>
+                <div class="exchange-rate">
+                    <div class="exchange-unit"><img src="resources/bud-clicker/bud.png"><span>5,000 Buds</span></div>
+                    <div class="exchange-arrow">➔</div>
+                    <div class="exchange-unit"><img src="resources/items/chip.png"><span>1,750 + 🎲 Extra</span></div>
+                </div>
+                <button class="btn-cashout disabled">Roll High Roller Tier</button>
+            </div>
+        </div>
     </div>
-
+    <div id="upgrades-shop-injection-point"></div>
     <script>
-        const STORAGE_CHIPS = 'kings-casino-chips';
-        const STORAGE_TICKETS = 'kings-casino-tickets';
-        const STORAGE_FREE_SPIN = 'kings-casino-last-free-spin-time';
-        const STORAGE_TICKET_SPIN_LOG = 'kings-casino-ticket-spin-log';
+        const CHIP_STORAGE_KEY = 'kings-casino-chips';
+        const BUD_STORAGE_KEY = 'kings-casino-buds';
+        const MULTIPLIER_STORAGE_KEY = 'kings-casino-click-multiplier';
+        const RAIN_ACTIVE_KEY = 'kings-casino-rain-active';
 
-        const rewards = [
-            {type: 'chips', amount: 7000, label: '7000 Chips'},
-            {type: 'tickets', amount: 3, label: '3 Tickets'},
-            {type: 'none', amount: 0, label: 'Nothing!'},
-            {type: 'bonus', amount: 10000, label: 'Bonus 10,000 Chips'}
-        ];
-
-        const FREE_SPIN_INTERVAL = 24 * 60 * 60 * 1000;
-        const TICKET_SPIN_COOLDOWN_WINDOW = 60 * 60 * 1000;
-        const TICKET_SPIN_MAX_PER_WINDOW = 3;
-
-        function getTicketSpinLog() {
-            try {
-                let arr = JSON.parse(localStorage.getItem(STORAGE_TICKET_SPIN_LOG));
-                if (!Array.isArray(arr)) return [];
-                return arr;
-            } catch {
-                return [];
+        function getChips() {
+            let bal = parseInt(localStorage.getItem(CHIP_STORAGE_KEY), 10);
+            if (isNaN(bal)) {
+                bal = 100;
+                localStorage.setItem(CHIP_STORAGE_KEY, bal);
             }
+            return bal;
         }
 
-        function setTicketSpinLog(arr) {
-            localStorage.setItem(STORAGE_TICKET_SPIN_LOG, JSON.stringify(arr));
-        }
-
-        function clearOldTicketSpins() {
-            const now = Date.now();
-            let spins = getTicketSpinLog().filter(ts => (now - ts) < TICKET_SPIN_COOLDOWN_WINDOW);
-            setTicketSpinLog(spins);
-            return spins;
-        }
-
-        function canTicketSpin() {
-            const spins = clearOldTicketSpins();
-            return spins.length < TICKET_SPIN_MAX_PER_WINDOW;
-        }
-
-        function getTicketSpinCooldownStatus() {
-            const now = Date.now();
-            let spins = clearOldTicketSpins();
-            let remaining = Math.max(0, TICKET_SPIN_MAX_PER_WINDOW - spins.length);
-            let ms_until_reset = 0;
-            let next_reset_time = 0;
-            if (spins.length === TICKET_SPIN_MAX_PER_WINDOW) {
-                ms_until_reset = Math.max(0, TICKET_SPIN_COOLDOWN_WINDOW - (now - spins[0]));
-                next_reset_time = spins[0] + TICKET_SPIN_COOLDOWN_WINDOW;
+        function getBuds() {
+            let buds = parseFloat(localStorage.getItem(BUD_STORAGE_KEY));
+            if (isNaN(buds)) {
+                buds = 0.0;
+                localStorage.setItem(BUD_STORAGE_KEY, buds);
             }
-            return [remaining, ms_until_reset, next_reset_time];
+            return buds;
         }
 
-        function logTicketSpinNow() {
-            const now = Date.now();
-            let spins = clearOldTicketSpins();
-            spins.push(now);
-            setTicketSpinLog(spins);
+        function getClickMultiplier() {
+            let mult = parseFloat(localStorage.getItem(MULTIPLIER_STORAGE_KEY));
+            if (isNaN(mult)) {
+                mult = 1.0;
+                localStorage.setItem(MULTIPLIER_STORAGE_KEY, mult);
+            }
+            return mult;
         }
 
-        function getLastFreeSpinTime() {
-            return parseInt(localStorage.getItem(STORAGE_FREE_SPIN) || "0");
+        function updateUIUpdates() {
+            const currentBuds = getBuds();
+            document.getElementById('clicker-chips').innerText = getChips().toLocaleString();
+            document.getElementById('clicker-buds').innerText = Math.floor(currentBuds).toLocaleString();
+            document.querySelectorAll('.shop-card').forEach(card => {
+                const cost = parseInt(card.getAttribute('data-cost'), 10);
+                const btn = card.querySelector('.btn-cashout');
+                if (btn) {
+                    if (currentBuds >= cost) btn.classList.remove('disabled');
+                    else btn.classList.add('disabled');
+                }
+            });
         }
 
-        function setLastFreeSpinNow() {
-            localStorage.setItem(STORAGE_FREE_SPIN, Date.now());
+        function throttle(fn, delay) {
+            let last = 0;
+            let queued = false;
+            let ctx, args;
+            return function throttled(...a) {
+                const now = Date.now();
+                ctx = this;
+                args = a;
+                if (now - last >= delay) {
+                    last = now;
+                    fn.apply(ctx, args);
+                } else if (!queued) {
+                    queued = true;
+                    setTimeout(() => {
+                        last = Date.now();
+                        queued = false;
+                        fn.apply(ctx, args);
+                    }, delay - (now - last));
+                }
+            };
         }
 
-        function getTimeUntilNextFreeSpin() {
-            const last = getLastFreeSpinTime();
-            const now = Date.now();
-            if (now - last >= FREE_SPIN_INTERVAL) return 0;
-            return (last + FREE_SPIN_INTERVAL) - now;
-        }
+        const clickTarget = document.getElementById('bud-click-target');
+        const CLICK_THROTTLE_MS = 24;
 
-        function canFreeSpin() {
-            return getTimeUntilNextFreeSpin() === 0;
-        }
+        function handleBudClick(e) {
+            const baseMultiplier = getClickMultiplier();
+            const isRainActive = localStorage.getItem(RAIN_ACTIVE_KEY) === 'true';
+            const rainModifier = isRainActive ? 20 : 1;
+            const gainValue = 1 * baseMultiplier * rainModifier;
 
-        function formatTimeMs(ms) {
-            if (ms <= 0) return "Ready!";
-            let s = Math.floor(ms/1000);
-            let h = Math.floor(s/3600);
-            s = s % 3600;
-            let m = Math.floor(s/60);
-            s = s % 60;
-            let parts = [];
-            if (h > 0) parts.push(h + "h");
-            if (m > 0 || h > 0) parts.push(m.toString().padStart(2,'0') + "m");
-            parts.push(s.toString().padStart(2,'0') + "s");
-            return parts.join(" ");
-        }
+            let currentBuds = getBuds() + gainValue;
+            localStorage.setItem(BUD_STORAGE_KEY, currentBuds);
+            updateUIUpdates();
 
-        let timerInterval = null;
+            const makePlus = () => {
+                const plusText = document.createElement('div');
+                plusText.className = 'floating-plus' + (isRainActive ? ' rain-boost' : '');
+                plusText.innerText = `+${gainValue.toLocaleString(undefined, {minimumFractionDigits:0, maximumFractionDigits:1})}`;
 
-        function updateFreeSpinUI() {
-            const btn = document.getElementById('spin-btn');
-            const timerLabel = document.getElementById('free-timer-label');
-            if (canFreeSpin()) {
-                btn.innerText = "FREE DAILY SPIN!";
-                btn.classList.add("free-spin");
-                timerLabel.innerText = "Your daily spin is available!";
-                timerLabel.style.display = "block";
+                let x = e.clientX, y = e.clientY;
+                if ((x === undefined || x <= 0) && e.touches && e.touches.length > 0) {
+                    x = e.touches[0].clientX;
+                    y = e.touches[0].clientY;
+                }
+                plusText.style.left = (x || window.innerWidth / 2) + 'px';
+                plusText.style.top = (y || window.innerHeight / 2) + 'px';
+                document.body.appendChild(plusText);
+                setTimeout(() => plusText.remove(), 800);
+            };
+            if ('requestAnimationFrame' in window) {
+                requestAnimationFrame(makePlus);
             } else {
-                let ms = getTimeUntilNextFreeSpin();
-                btn.innerText = "SPIN (1 Ticket)";
-                btn.classList.remove("free-spin");
-                timerLabel.style.display = "block";
-                timerLabel.innerText = "Daily Spin: " + formatTimeMs(ms);
+                makePlus();
             }
         }
 
-        function updateTicketSpinCooldownUI() {
-            const btn = document.getElementById('spin-btn');
-            const cooldownLabel = document.getElementById('ticket-spin-timer-label');
-            if (!canFreeSpin()) {
-                let [remaining, ms_until_reset] = getTicketSpinCooldownStatus();
-                if (remaining > 0) {
-                    cooldownLabel.innerText = `Spins left: ${remaining} / 3 (resets in ${formatTimeMs(ms_until_reset)})`;
-                    cooldownLabel.style.display = "block";
-                    btn.disabled = false;
-                    btn.style.pointerEvents = "";
-                    btn.style.opacity = "";
-                } else {
-                    cooldownLabel.innerText = `Spin limit reached! Next spin in ${formatTimeMs(ms_until_reset)}`;
-                    cooldownLabel.style.display = "block";
-                    btn.disabled = true;
-                    btn.style.pointerEvents = "none";
-                    btn.style.opacity = "0.5";
-                }
-            } else {
-                cooldownLabel.style.display = "none";
-                btn.disabled = false;
-                btn.style.pointerEvents = "";
-                btn.style.opacity = "";
+        clickTarget.addEventListener('pointerdown', throttle(handleBudClick, CLICK_THROTTLE_MS));
+
+        const shopOverlay = document.getElementById('casino-shop-overlay');
+        const openShopBtn = document.getElementById('shop-open-btn');
+        const closeShopBtn = document.getElementById('shop-close-btn');
+
+        openShopBtn.addEventListener('click', () => {
+            shopOverlay.classList.add('active');
+        });
+        closeShopBtn.addEventListener('click', () => {
+            shopOverlay.classList.remove('active');
+        });
+
+        window.addEventListener('storage', (e) => {
+            if (e.key === CHIP_STORAGE_KEY || e.key === BUD_STORAGE_KEY || e.key === MULTIPLIER_STORAGE_KEY) {
+                updateUIUpdates();
             }
-        }
+        });
 
-        function startFreeSpinTimer() {
-            if (timerInterval) clearInterval(timerInterval);
-            timerInterval = setInterval(() => {
-                updateFreeSpinUI();
-                updateTicketSpinCooldownUI();
-            }, 1000);
-            updateFreeSpinUI();
-            updateTicketSpinCooldownUI();
-        }
-
-        function updateUI() {
-            let chips = parseInt(localStorage.getItem(STORAGE_CHIPS) || 100);
-            let tickets = parseInt(localStorage.getItem(STORAGE_TICKETS) || 0);
-            document.getElementById('chip-display').innerText = chips.toLocaleString();
-            document.getElementById('ticket-display').innerText = tickets;
-            document.getElementById('rate-text').innerText = (chips > 50000 ? "10,000" : "5,000");
-            updateFreeSpinUI();
-            updateTicketSpinCooldownUI();
-        }
-
-        function exchangeChips() {
-            let chips = parseInt(localStorage.getItem(STORAGE_CHIPS) || 100);
-            let cost = (chips > 50000) ? 10000 : 5000;
-            if (chips >= cost) {
-                localStorage.setItem(STORAGE_CHIPS, chips - cost);
-                localStorage.setItem(STORAGE_TICKETS, parseInt(localStorage.getItem(STORAGE_TICKETS) || 0) + 1);
-                if (window.playWheelConvertSfx) window.playWheelConvertSfx();
-                updateUI();
-            } else {
-                alert("Not enough chips!");
-            }
-        }
-
-        let isSpinning = false;
-        function spinWheel() {
-            if (isSpinning) return;
-            let useFreeSpin = canFreeSpin();
-            let tickets = parseInt(localStorage.getItem(STORAGE_TICKETS) || 0);
-
-            if (!useFreeSpin) {
-                if (!canTicketSpin()) {
-                    let [, ms_until_reset] = getTicketSpinCooldownStatus();
-                    alert(`You have reached your hourly ticket spin limit!\nTry again in ${formatTimeMs(ms_until_reset)} (Max 3 spins per hour).`);
-                    updateUI();
-                    return;
-                }
-            }
-
-            if (window.playWheelSpinStart) window.playWheelSpinStart();
-
-            if (!useFreeSpin && tickets < 1) {
-                alert("Need a ticket!\nOr check when your FREE daily spin is ready.");
-                return;
-            }
-
-            if (useFreeSpin) {
-                setLastFreeSpinNow();
-                startFreeSpinTimer();
-            } else {
-                localStorage.setItem(STORAGE_TICKETS, tickets - 1);
-                logTicketSpinNow();
-            }
-
-            const wheel = document.getElementById('wheel');
-            isSpinning = true;
-
-            wheel.style.transition = 'none';
-            wheel.style.transform = 'rotate(0deg)';
-            wheel.offsetHeight;
-
-            const numSegments = rewards.length;
-            const segmentAngle = 360 / numSegments;
-
-            const winIndex = Math.floor(Math.random() * numSegments);
-            const minAngle = winIndex * segmentAngle;
-
-            const innerRange = Math.max(segmentAngle - 30, 1);
-            const angleWithinSegment = 15 + Math.random() * innerRange;
-            const landingAngle = minAngle + angleWithinSegment;
-
-            const laps = 8;
-            const spinDuration = 7000;
-            const finalRotation = laps * 360 + landingAngle;
-
-            wheel.style.transition = `transform ${spinDuration / 1000}s cubic-bezier(0.17, 0.67, 0.12, 0.99)`;
-            wheel.style.transform = `rotate(${finalRotation}deg)`;
-
-            setTimeout(() => {
-                const angleFromTop = (360 - (finalRotation % 360)) % 360;
-                let landedIndex = Math.floor(angleFromTop / segmentAngle);
-                if (landedIndex >= numSegments) landedIndex = 0;
-
-                const win = rewards[landedIndex];
-
-                if (win.type === 'chips' || win.type === 'bonus') {
-                    localStorage.setItem(
-                        STORAGE_CHIPS,
-                        parseInt(localStorage.getItem(STORAGE_CHIPS) || 0) + win.amount
-                    );
-                }
-                if (win.type === 'tickets') {
-                    localStorage.setItem(
-                        STORAGE_TICKETS,
-                        parseInt(localStorage.getItem(STORAGE_TICKETS) || 0) + win.amount
-                    );
-                }
-
-                if (win.type === 'none' || win.amount === 0) {
-                    if (window.playWheelLoseSfx) window.playWheelLoseSfx();
-                } else {
-                    if (window.playWheelRewardSfx) window.playWheelRewardSfx();
-                }
-
-                showPopup(win.label);
-                isSpinning = false;
-                updateUI();
-            }, spinDuration);
-        }
-
-        function showPopup(msg) {
-            const popup = document.getElementById('popup');
-            document.getElementById('popup-content').innerHTML = `<h2>You Won:</h2><p style="font-size:2rem; color:#f1c40f;">${msg}</p><button onclick="document.getElementById('popup').style.display='none'">OK</button>`;
-            popup.style.display = 'flex';
-        }
-
-        updateUI();
-        startFreeSpinTimer();
+        document.addEventListener('DOMContentLoaded', updateUIUpdates);
     </script>
 
     <script src="scripts/gamepad.js"></script>
-    <script src="sfx/wheel.js"></script>
-    <script src="scripts/trophies.js"></script>
-    <script src="scripts/piggy-bank.js"></script>
     <script src="scripts/first-click.js"></script>
+    <script src="sfx/bc.js"></script>
+    <script src="scripts/piggy-bank.js"></script>
+    <script src="scripts/bc-shop.js"></script>
+    <script src="scripts/bc-upgrade-shop.js"></script>
+    <script src="vfx/bc-rain-effect.js"></script>
+    <script src="vfx/bc.js"></script>
 </body>
 </html>

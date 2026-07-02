@@ -205,6 +205,18 @@
         .buy-btn.purchased:active, .buy-btn.purchased:hover {
             transform: none;
         }
+        ::-webkit-scrollbar {
+            width: 10px;
+            background: #181818;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #232323;
+            border-radius: 8px;
+            border: 2px solid #111;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #222;
+        }
     </style>
 </head>
 <body>
@@ -231,11 +243,22 @@
                     <span id="piggy-btn-text">10,000</span>
                 </button>
             </div>
+            <div class="shop-item" style="animation-delay: 0.2s;">
+                <img src="resources/ui/piggy-bank.png" alt="Quick Break Upgrade" class="item-icon">
+                <h2 class="item-title" id="cooldown-title">Quick Break</h2>
+                <p class="item-desc" id="cooldown-desc">Reduce the Piggy Bank break-open cooldown from 24 hours to 3 hours in real time.</p>
+                <button class="buy-btn" id="buy-cooldown-btn" onclick="buyCooldownUpgrade();playPurchaseSFX();" type="button" aria-live="polite">
+                    <img src="resources/items/chip.png" alt="Chips" style="width:28px;height:28px;">
+                    <span id="cooldown-btn-text">500,000</span>
+                </button>
+            </div>
         </div>
     </div>
     <script>
         const STORAGE_KEY = 'kings-casino-chips';
         const UPGRADE_KEY = 'kings-casino-piggy-stage';
+        const COOLDOWN_UPGRADE_KEY = 'kings-casino-piggy-cooldown-upgrade';
+        const COOLDOWN_UPGRADE_COST = 500000;
         const PIGGY_STAGES = {
             1: { maxCapacity: 10000, cost: 0 },
             2: { maxCapacity: 20000, cost: 10000000 },
@@ -317,6 +340,48 @@
             }
         }
 
+        function updateCooldownUpgradeUI() {
+            const btn = document.getElementById('buy-cooldown-btn');
+            const btnText = document.getElementById('cooldown-btn-text');
+            const title = document.getElementById('cooldown-title');
+            const desc = document.getElementById('cooldown-desc');
+            if (localStorage.getItem(COOLDOWN_UPGRADE_KEY) === '1') {
+                btn.classList.add('purchased');
+                btn.onclick = null;
+                btnText.innerText = 'PURCHASED';
+                const img = btn.querySelector('img');
+                if (img) img.style.display = 'none';
+                title.innerText = 'Quick Break (Owned)';
+                desc.innerText = 'Piggy Bank break-open cooldown is now 3 hours in real time.';
+            } else {
+                btn.classList.remove('purchased');
+                btn.onclick = function() {
+                    buyCooldownUpgrade();
+                    playPurchaseSFX();
+                };
+                btnText.innerText = COOLDOWN_UPGRADE_COST.toLocaleString();
+                const img = btn.querySelector('img');
+                if (img) img.style.display = '';
+                title.innerText = 'Quick Break';
+                desc.innerText = 'Reduce the Piggy Bank break-open cooldown from 24 hours to 3 hours in real time.';
+            }
+        }
+
+        function buyCooldownUpgrade() {
+            if (localStorage.getItem(COOLDOWN_UPGRADE_KEY) === '1') return;
+            const balance = getBalance();
+            if (balance >= COOLDOWN_UPGRADE_COST) {
+                setBalance(balance - COOLDOWN_UPGRADE_COST);
+                localStorage.setItem(COOLDOWN_UPGRADE_KEY, '1');
+                playPurchaseSFX();
+                updateCooldownUpgradeUI();
+                alert('Piggy Bank break-open cooldown reduced to 3 hours.');
+            } else {
+                playPurchaseSFX();
+                alert(`Not enough chips! You need ${COOLDOWN_UPGRADE_COST.toLocaleString()} to buy this upgrade.`);
+            }
+        }
+
         function buyPiggyUpgrade() {
             const level = getPiggyLevel();
             if (level >= 3) return;
@@ -338,9 +403,13 @@
             setupBGM();
             updateBalanceDisplay();
             updatePiggyUI();
+            updateCooldownUpgradeUI();
         });
         window.addEventListener('storage', function (e) {
-            if (e.key === STORAGE_KEY) updateBalanceDisplay();
+            if (e.key === STORAGE_KEY || e.key === COOLDOWN_UPGRADE_KEY) {
+                updateBalanceDisplay();
+                updateCooldownUpgradeUI();
+            }
         });
     </script>
     <script src="scripts/gamepad.js"></script>
