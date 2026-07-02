@@ -1,3 +1,6 @@
+v1.1.6 - - - - - - - - - July 1st, 2026 - - - Alpha -
+Changed Crown Crates Prices, Buffed Crown Crates,  Piggy Bank Upgrade is Back!, 
+
 v1.1.5 - - - - - - - - - June 29th, 2026 - - RiverHall Homes DLC/GamePad Support - Alpha -
 New Commands in Chat Dice, Stats in Chat Dice, Username Change in Chat Dice, Updated First Click Screen, Updates to Chip Exchange in VIP Room, Updates to Slot Machines in VIP Room,
 Minor Improvements to Games DLCS, Full GamePad Support, New Crowns System for Buying Furniture, Shop Enhancements, 3h Cooldown piggy bank upgrade removed, Overhaul to some scripts, 
